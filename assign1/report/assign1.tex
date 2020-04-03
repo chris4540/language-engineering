@@ -1,0 +1,43 @@
+
+\documentclass[12pt]{article}
+
+% packages
+\usepackage[margin=1in]{geometry}
+\usepackage{enumerate}
+\usepackage[numbers]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{qtree}
+
+% \setlength{\parindent}{1em}
+\setlength{\parskip}{.5em}
+
+% Declar commands
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\def\printemptyline#1{\def\par{\ifvmode\emptyline\fi\endgraf}\obeylines}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+
+\begin{document}
+
+\title{DD2418-Language Engineering Assignment 1 (Auduting)}
+\author{Lin Chun Hung, chlin3@kth.se}
+\maketitle
+
+\begin{problem}{1.1}
+    Find all the trees derivable from the sentence:
+    \emph{"He built the shed with a hammer in the yard behind the house"}
+
+    \begin{figure}[!hb]
+        \Tree[.IP [.NP [.Det \textit{the} ]
+               [.N\1 [.N \textit{package} ]]]
+          [.I\1 [.I \textsc{3sg.Pres} ]
+                [.VP [.V\1 [.V \textit{is} ]
+                           [.AP [.Deg \textit{really} ]
+                                [.A\1 [.A \textit{simple} ]
+                                      \qroof{\textit{to use}}.CP ]]]]]]
+        \caption{Helloworld}
+    \end{figure}
+\end{problem}
+
+\end{document}
