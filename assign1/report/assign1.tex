@@ -7,6 +7,9 @@
 \usepackage[numbers]{natbib}
 \usepackage[hidelinks]{hyperref}
 \usepackage{qtree}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
 
 % \setlength{\parindent}{1em}
 \setlength{\parskip}{.5em}
@@ -20,24 +23,134 @@
 
 \begin{document}
 
-\title{DD2418-Language Engineering Assignment 1 (Auduting)}
+\title{DD2418-Language Engineering Assignment 1 (Auditing)}
 \author{Lin Chun Hung, chlin3@kth.se}
 \maketitle
 
 \begin{problem}{1.1}
-    Find all the trees derivable from the sentence:
-    \emph{"He built the shed with a hammer in the yard behind the house"}
+Find all the trees derivable from the sentence:
+\emph{"He built the shed with a hammer in the yard behind the house"}
 
-    \begin{figure}[!hb]
-        \Tree[.IP [.NP [.Det \textit{the} ]
-               [.N\1 [.N \textit{package} ]]]
-          [.I\1 [.I \textsc{3sg.Pres} ]
-                [.VP [.V\1 [.V \textit{is} ]
-                           [.AP [.Deg \textit{really} ]
-                                [.A\1 [.A \textit{simple} ]
-                                      \qroof{\textit{to use}}.CP ]]]]]]
-        \caption{Helloworld}
-    \end{figure}
+As we have 3 prepositional phrases in the sentence, we will have 5 analyses (or
+5 syntex trees.)
+
+% \begin{figure}[!hb]
+%    \Tree
+%    [.S
+%       [.NP
+%          [.Pron \textit{He} ]
+%       ]
+%       [.VP
+%          [.Verb \textit{built} ]
+%          [.NP
+%             [.Det \textit{the} ]
+%             [.Noun \textit{shed} ]
+%             [.PP
+%                [.Prep \textit{with} ]
+%                [.NP
+%                   [.Det \textit{a} ]
+%                   [.Noun \textit{hammer} ]
+%                ]
+%             ]
+%          ]
+%       ]
+%    ]
+%    \caption{Helloworld}
+%    % He built the shed [[with a hammer in the yard] behind the house]
+% \end{figure}
+\begin{figure}[!hb]
+   \centering
+   \resizebox{\textwidth}{!}{
+   \Tree
+   [.S
+      [.NP
+         [.Pron \textit{He} ]
+      ]
+      [.VP
+         [.Verb \textit{built} ]
+         [.NP
+            [.Det \textit{the} ]
+            [.Noun \textit{shed} ]
+         ]
+         [.PP
+            [.Prep \textit{with} ]
+            [.NP
+               [.Det \textit{a} ]
+               [.Noun \textit{hammer} ]
+               [.PP
+                  [.Prep  \textit{in} ]
+                  [.NP
+                     [.Det \textit{the} ]
+                     [.Noun \textit{yard} ]
+                     \qroof{behind the house}.PP
+                        % .PP \textit{}
+                        % [.Prep  \textit{behind} ]
+                        % [.NP
+                        %    [.Det \textit{the} ]
+                        %    [.Noun \textit{house} ]
+                        % ]
+                  ]
+               ]
+            ]
+         ]
+      ]
+   ]
+   }
+   \captionsetup{justification=centering}
+   \caption{ Tree 1 \\
+      The hammer is in the yard.\\
+      The yard is behind the house.\\
+      The shed is in a unknown place.
+   }
+   % He built the shed [[with a hammer in the yard] behind the house]
+\end{figure}
+\begin{figure}[!hb]
+   \centering
+   \resizebox{\textwidth}{!}{
+   \Tree
+   [.S
+      [.NP
+         [.Pron \textit{He} ]
+      ]
+      [.VP
+         [.Verb \textit{built} ]
+         [.NP
+            [.Det \textit{the} ]
+            [.Noun \textit{shed} ]
+         ]
+         [.PP
+            [.Prep \textit{with} ]
+            [.NP
+               [.Det \textit{a} ]
+               [.Noun \textit{hammer} ]
+               [.PP
+                  [.Prep  \textit{in} ]
+                  [.NP
+                     [.Det \textit{the} ]
+                     [.Noun \textit{yard} ]
+                     \qroof{behind the house}.PP
+                        % .PP \textit{}
+                        % [.Prep  \textit{behind} ]
+                        % [.NP
+                        %    [.Det \textit{the} ]
+                        %    [.Noun \textit{house} ]
+                        % ]
+                  ]
+               ]
+            ]
+         ]
+      ]
+   ]
+   }
+   \captionsetup{justification=centering}
+   \caption{ Tree 2 \\
+      The hammer is in the yard.\\
+      The yard is behind the house.\\
+      The shed is in a unknown place.
+   }
+   % He built the shed [[with a hammer in the yard] behind the house]
+\end{figure}
+
 \end{problem}
 
 \end{document}
