@@ -8,21 +8,56 @@
 
     Submit the HTML file.
 
-> Time est.: 2 days, 1.5day for studying, 0.5 day for impl.
-> Exp. Deadline: 12th June.
+> Time est.: 3 days, 1.5day for studying, 0.5 for practice an assignment, 0.5 day for impl.
+> Exp. Deadline: 13th June.
+> Method:
+>   1. emb + unsupervised method?
+>   2. POS / NER tagging
+>
+> Ref:
+> t-sne and hwo to build word emb (not necessary):
+>   https://www.kdnuggets.com/2018/04/implementing-deep-learning-methods-feature-engineering-text-data-skip-gram.html
+>   https://www.kdnuggets.com/2018/04/implementing-deep-learning-methods-feature-engineering-text-data-cbow.html
+> Clustering methods:
+>   https://towardsdatascience.com/a-friendly-introduction-to-text-clustering-fa996bcefd04
 -----------------------------------------------------------------------------------
 2a.  In the previous exercise, you clustered words.
      Describe how you might cluster multi-word phrases or sentences or paragraphs
      of arbitrary lengths. [2.5day]
  b.  (*Optional) Describe how you might cluster words from different languages
 
-3.  The earliest deep-learning attention mechanism was the method proposed by
-    Bahdanau in a paper on sequence to sequence models. [2day]
-    Name some other variants of attention mechanisms (other than Bahdanau's method).
+> 1. Laternt Semantic Analysis + Singular value decomposition
+>    How to have concept-document matrix / its transposes
 
+
+-----------------------------------------------------------------------------------
+3.  The earliest deep-learning attention mechanism was the method proposed by
+    Bahdanau in a paper on sequence to sequence models.
+    Name some other variants of attention mechanisms (other than Bahdanau's method).
+    [2days]
+-----------------------------------------------------------------------------------
 4.  Come up with an architecture for an ANN that would suffice to add up the digits of a 4-digit number.
     Try to find the smallest that can do the job.
-    What is the minimum number of fully connected layers (separated by non-linearities)
-    that an ANN must have to compute the XOR function. [2day]
 
-5.  How can you tell if an ML model is underfitting and overfitting? [1day]
+    architecture: RNN
+    Reference:
+    https://stackoverflow.com/questions/4204756/training-a-neural-network-to-add
+    https://github.com/VenkatRajaIyer/Recurrent-Neural-Network-Sum-of-digits-in-a-number
+    http://projects.rajivshah.com/blog/2016/04/05/rnn_addition/
+    https://keras.io/examples/addition_rnn/
+
+    Approach:
+    trian a general example, analyze how they add. Consider if we can hand-craft
+    a RNN to sum them up
+
+    Time: 8hrs
+
+    What is the minimum number of fully connected layers (separated by non-linearities)
+    that an ANN must have to compute the XOR function. [1 day]
+    https://medium.com/@jayeshbahire/the-xor-problem-in-neural-networks-50006411840b#:~:text=The%20XOr%2C%20or%20%E2%80%9Cexclusive%20or,value%20if%20they%20are%20equal.
+    http://yen.cs.stir.ac.uk/~kjt/techreps/pdf/TR148.pdf
+    https://datascience.stackexchange.com/questions/11589/creating-neural-net-for-xor-function
+    Time: 2hrs
+-----------------------------------------------------------------------------------
+5.  How can you tell if an ML model is underfitting and overfitting?
+    4 hrs, check book and blogs
