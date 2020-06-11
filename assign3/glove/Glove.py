@@ -21,11 +21,11 @@ class Glove :
     # Mapping from IDs to words.
     id2word = defaultdict(lambda: None)
 
-    # Mapping from focus words to neighbours to counts (called X 
+    # Mapping from focus words to neighbours to counts (called X
     # to be consistent with the notation in the Glove paper).
     X = defaultdict(lambda: defaultdict(int))
 
-    # Mapping from word IDs to (focus) word vectors. (called w_vector 
+    # Mapping from word IDs to (focus) word vectors. (called w_vector
     # to be consistent with the notation in the Glove paper).
     w_vector = defaultdict(lambda: None)
 
@@ -74,7 +74,7 @@ class Glove :
     # as a numpy array of size (number of words, vector dimension) in order
     # to use the sklearn NearestNeighbor library.
     vector = None
-    
+
     # Initializes the local context window
     def __init__( self, left_window_size, right_window_size ) :
         self.window = [-1 for i in range(left_window_size + right_window_size)]
@@ -138,7 +138,7 @@ class Glove :
     def update_counts( self ) :
         # YOUR CODE HERE
         pass
-    
+
 
     # Handles one token in the text
     def process_token( self, word ) :
@@ -156,7 +156,7 @@ class Glove :
             stream = open( file_or_dir, mode='r', encoding='utf-8', errors='ignore' )
             text = stream.read()
             try :
-                tokens = nltk.word_tokenize(text) 
+                tokens = nltk.word_tokenize(text)
             except LookupError :
                 nltk.download('punkt')
                 tokens = nltk.word_tokenize(text)
@@ -166,7 +166,7 @@ class Glove :
                 if self.current_token_number % 100000 == 0 :
                     print( 'Processed ' + str(self.current_token_number) + ' tokens' )
 
-        
+
     #
     #  Methods for processing all files and computing all counts
     #
@@ -183,12 +183,12 @@ class Glove :
             ratio = count/100.0
             return math.pow( ratio, 0.75 )
         return 1.0
-    
+
 
     # The loss function
     def loss( self ) :
         # YOUR CODE HERE
-        return 0.0    
+        return 0.0
 
 
     # Compute all gradients of both focus and context word vectors
@@ -204,13 +204,13 @@ class Glove :
 
     ##
     ## @brief      Function returning k nearest neighbors with distances for each word in `words`
-    ## 
-    ## We suggest using nearest neighbors implementation from scikit-learn 
+    ##
+    ## We suggest using nearest neighbors implementation from scikit-learn
     ## (https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html). Check
     ## carefully their documentation regarding the parameters passed to the algorithm.
-    ## 
+    ##
     ## To describe how the function operates, imagine you want to find 5 nearest neighbors for the words
-    ## "Harry" and "Potter" using cosine distance (which can be computed as 1 - cosine similarity). 
+    ## "Harry" and "Potter" using cosine distance (which can be computed as 1 - cosine similarity).
     ## For that you would need to call `self.find_nearest(["Harry", "Potter"], k=5, metric='cosine')`.
     ## The output of the function would then be the following list of lists of tuples (LLT)
     ## (all words and distances are just example values):
@@ -230,12 +230,16 @@ class Glove :
     ##
     def find_nearest(self, words, metric='cosine'):
         # YOUR CODE HERE
+
+        # related docs:
+        # https://github.com/scikit-learn/scikit-learn/blob/0.23.X/sklearn/metrics/pairwise.py
+        # https://github.com/scikit-learn/scikit-learn/blob/0.23.X/sklearn/neighbors/_base.py#L33
         return [None]
 
     ##
-    ## @brief      Trains word embeddings and enters the interactive loop, where you can 
+    ## @brief      Trains word embeddings and enters the interactive loop, where you can
     ##             enter a word and get a list of k nearest neighours.
-    ##        
+    ##
     def train_and_persist(self):
         self.fit()
         text = input('> ')
@@ -246,7 +250,7 @@ class Glove :
                 print("Neighbors for {}: {}".format(w, n))
             text = input('> ')
 
-       
+
     #
     #  End of loss function, gradient descent, etc.
     #
@@ -266,7 +270,7 @@ class Glove :
                     f.write('{} '.format( i ))
                 f.write( '\n' )
         f.close()
-        
+
 
 
 def main() :
@@ -279,16 +283,16 @@ def main() :
     parser.add_argument('--left_window_size', '-lws', type=int, default='2', help='Left context window size')
     parser.add_argument('--right_window_size', '-rws', type=int, default='2', help='Right context window size')
 
-    arguments = parser.parse_args()  
-    
+    arguments = parser.parse_args()
+
     glove = Glove(arguments.left_window_size, arguments.right_window_size)
     glove.dimension = arguments.dimension
     glove.process_files( arguments.file )
     glove.train_and_persist()
     glove.print_word_vectors_to_file( arguments.output )
 
-    
+
 
 if __name__ == '__main__' :
-    main()    
+    main()
 
