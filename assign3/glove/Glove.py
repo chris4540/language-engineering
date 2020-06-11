@@ -234,6 +234,30 @@ class Glove :
         # related docs:
         # https://github.com/scikit-learn/scikit-learn/blob/0.23.X/sklearn/metrics/pairwise.py
         # https://github.com/scikit-learn/scikit-learn/blob/0.23.X/sklearn/neighbors/_base.py#L33
+        # def find_nearest(self, words: List[str], k: int = 5, metric: str = 'cosine'):
+        #     """
+        #     Reference
+        #     ----------
+        #     https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html
+        #     """
+        #     neigh = NearestNeighbors(n_neighbors=k, metric=metric)
+        #     neigh.fit(self._word_to_emb.to_numpy())  # fit the model
+
+        #     input_ = [self[w] for w in words]
+        #     dists, w_idxs = neigh.kneighbors(
+        #         input_, n_neighbors=k, return_distance=True)
+        #     n_words, _ = dists.shape
+
+        #     ret = []
+        #     for i in range(n_words):
+        #         tmp = []
+        #         words = self._word_to_emb.iloc[w_idxs[i]].index
+        #         for w, d in zip(words, dists[i]):
+        #             tmp.append((w, d))
+        #         ret.append(tmp)
+
+        #     return ret
+
         return [None]
 
     ##
