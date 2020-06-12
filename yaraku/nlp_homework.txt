@@ -8,18 +8,26 @@
 
     Submit the HTML file.
 
-> Time est.: 3 days, 1.5day for studying, 0.5 for practice an assignment, 0.5 day for impl.
-> Exp. Deadline: 13th June.
-> Method:
->   1. emb + unsupervised method?
->   2. POS / NER tagging
->
-> Ref:
-> t-sne and hwo to build word emb (not necessary):
->   https://www.kdnuggets.com/2018/04/implementing-deep-learning-methods-feature-engineering-text-data-skip-gram.html
->   https://www.kdnuggets.com/2018/04/implementing-deep-learning-methods-feature-engineering-text-data-cbow.html
-> Clustering methods:
->   https://towardsdatascience.com/a-friendly-introduction-to-text-clustering-fa996bcefd04
+Time est.: 4 days
+Exp. Deadline: 13th June.
+
+Method:
+  1. Embedding space: GloVe
+  2. clustering methods: KMean, hierarchical, and GMM like 10000 words
+  3. sample appropriate # of words from each cluster, centroid
+  4. display them with t-SNE
+
+Reference:
+t-sne and hwo to build word emb (not necessary):
+  https://www.kdnuggets.com/2018/04/implementing-deep-learning-methods-feature-engineering-text-data-skip-gram.html
+  https://www.kdnuggets.com/2018/04/implementing-deep-learning-methods-feature-engineering-text-data-cbow.html
+
+Clustering methods**:
+  https://towardsdatascience.com/a-friendly-introduction-to-text-clustering-fa996bcefd04
+  https://towardsdatascience.com/the-5-clustering-algorithms-data-scientists-need-to-know-a36d136ef68
+
+K-mean:
+  https://ai.intelligentonlinetools.com/ml/k-means-clustering-example-word2vec/
 -----------------------------------------------------------------------------------
 2a.  In the previous exercise, you clustered words.
      Describe how you might cluster multi-word phrases or sentences or paragraphs
@@ -28,13 +36,14 @@
 
 > 1. Laternt Semantic Analysis + Singular value decomposition
 >    How to have concept-document matrix / its transposes
+> 2. prepare corpus and train a skipgram model for embedding <======= prepare for interview
 
 
 -----------------------------------------------------------------------------------
 3.  The earliest deep-learning attention mechanism was the method proposed by
     Bahdanau in a paper on sequence to sequence models.
     Name some other variants of attention mechanisms (other than Bahdanau's method).
-    [2days]
+    [2 days]
 -----------------------------------------------------------------------------------
 4.  Come up with an architecture for an ANN that would suffice to add up the digits of a 4-digit number.
     Try to find the smallest that can do the job.
