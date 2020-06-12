@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import csv
 from sklearn.neighbors import NearestNeighbors
-from typing import List
+from typing import List, Set, Iterable
 
 
 class GloVe:
@@ -12,6 +12,11 @@ class GloVe:
 
     def __getitem__(self, key: str) -> np.ndarray:
         ret = self._word_to_emb.loc[key].to_numpy()
+        return ret
+
+    @property
+    def wordset(self) -> Set[str]:
+        ret = set(self._word_to_emb.index)
         return ret
 
     def find_nearest(self, words: List[str], k: int = 5, metric: str = 'cosine'):
@@ -38,7 +43,33 @@ class GloVe:
         return ret
 
 
+class WordSample:
+    def __init__(self, must_include_wordset: Iterable[str], n_samples=10000):
+        with open("./words_alpha.txt", "r") as f:
+            self._words = f.read().splitlines()
+
+        print(f"words_alpha.txt has {len(self._words)} words.")
+        avaliable = set(self._words).intersection(must_include_wordset)
+        print("# of words intersect with `must_include_wordset`: ", len(avaliable))
+
+        # select n_samples data
+        self._selected = np.random.choice(
+            list(avaliable), size=n_samples, replace=False)
+        assert len(set(self._selected)) == n_samples
+
+    @property
+    def words(self) -> List[str]:
+        return self._selected
+
+
 if __name__ == "__main__":
-    glove = GloVe("glove.6B.50d.txt")
-    vec = glove["hello"]
-    print(glove.find_nearest(["hello", "world"]))
+    # set random seed
+    # np.random.seed(45)
+
+    glove = GloVe("glove.42B.300d.txt")
+    word_sample = WordSample(must_include_wordset=glove.wordset, n_samples=100)
+    print(word_sample.words)
+    # print(word_sample.words)
+
+    # vec = glove["hello"]
+    # print(glove.find_nearest(["hello", "world"]))
