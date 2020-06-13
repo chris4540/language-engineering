@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Set
+from typing import List, Set, Dict
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -16,14 +16,15 @@ class GloVe:
                 self._words.append(word)
 
         print(f"Loaded the file: {glove_file}")
+        print(f"Number of words: {len(self._words)}")
 
     def __getitem__(self, key: str) -> np.ndarray:
         ret = self.embeddings_dict[key]
         return ret
 
     @property
-    def wordset(self) -> Set[str]:
-        ret = set(self._words)
+    def wordset(self) -> List[str]:
+        ret = list(self._words)
         return ret
 
     def find_nearest(self, words: List[str], k: int = 5, metric: str = 'cosine'):
@@ -52,6 +53,10 @@ class GloVe:
             for w, d in zip(words, dists[i]):
                 tmp.append((w, d))
             ret.append(tmp)
+        return ret
+
+    def get_emb_vecs_of(self, words: List[str]) -> Dict[str, np.ndarray]:
+        ret = {w: self[w] for w in words}
         return ret
 
 

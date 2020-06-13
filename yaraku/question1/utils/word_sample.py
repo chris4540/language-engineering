@@ -3,13 +3,13 @@ from typing import Iterable, List
 
 
 class WordSample:
-    def __init__(self, file, must_include_wordset: Iterable[str], n_samples=10000, random_state=40):
+    def __init__(self, file, incl_words: Iterable[str], n_samples=10000, random_state=40):
         with open(file, "r", encoding="utf-8") as f:
             self._words = f.read().splitlines()
 
         print(f"{file} has {len(self._words)} words.")
-        avaliable = set(self._words).intersection(must_include_wordset)
-        print("# of words intersect with `must_include_wordset`: ", len(avaliable))
+        avaliable = set(self._words).intersection(incl_words)
+        print("# of words intersect with `incl_words`: ", len(avaliable))
 
         # select n_samples data
         rnd_state = np.random.RandomState(random_state)
