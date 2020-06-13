@@ -23,7 +23,7 @@ class GloVe:
 
     @property
     def wordset(self) -> Set[str]:
-        ret = set(self.embeddings_dict.keys())
+        ret = set(self._words)
         return ret
 
     def find_nearest(self, words: List[str], k: int = 5, metric: str = 'cosine'):
