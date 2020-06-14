@@ -12,6 +12,8 @@ has a good introduction of GMM clustering and how to select number of components
 - [K-means on cosine similarities vs. Euclidean distance (LSA)](https://stats.stackexchange.com/q/120350)
 - [Want to Cluster Text? Try Custom Word-Embeddings!](http://xplordat.com/2018/12/14/want-to-cluster-text-try-custom-word-embeddings/)
 - [K-means Cluster Analysis](https://uc-r.github.io/kmeans_clustering)
+- [In Depth: k-Means Clustering](https://jakevdp.github.io/PythonDataScienceHandbook/05.11-k-means.html)
+
 ### Visualization
 - [Playing with dimensions: from Clustering, PCA, t-SNE... to Carl Sagan!](https://blog.datascienceheroes.com/playing-with-dimensions-from-clustering-pca-t-sne-to-carl-sagan/)
 - [Code example: Plotting-multidimensional-vectors-using-t-SNE](https://github.com/ashutoshsingh25/Plotting-multidimensional-vectors-using-t-SNE)
