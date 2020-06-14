@@ -8,6 +8,13 @@ https://stats.stackexchange.com/questions/263539/clustering-on-the-output-of-t-s
 https://towardsdatascience.com/plotting-text-and-image-vectors-using-t-sne-d0e43e55d89
 https://github.com/ashutoshsingh25/Plotting-multidimensional-vectors-using-t-SNE/blob/master/TSNE%20Code%20for%20clusring%20image%20and%20text%20vectors%20with%20labels.ipynb
 https://blog.datascienceheroes.com/playing-with-dimensions-from-clustering-pca-t-sne-to-carl-sagan/
+http://xplordat.com/2018/12/14/want-to-cluster-text-try-custom-word-embeddings/
+https://stackoverflow.com/questions/46409846/using-k-means-with-cosine-similarity-python
+https://stats.stackexchange.com/questions/120350/k-means-on-cosine-similarities-vs-euclidean-distance-lsa
+https://towardsdatascience.com/k-means-clustering-algorithm-applications-evaluation-methods-and-drawbacks-aa03e644b48a
+https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/
+https://jakevdp.github.io/PythonDataScienceHandbook/05.12-gaussian-mixtures.html
+https://github.com/arvkevi/kneed
 """
 import numpy as np
 import pandas as pd
@@ -18,86 +25,32 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from sklearn.pipeline import make_pipeline
 import time
+from utils.glove import GloVe
 
 
-class GloVe:
-    def __init__(self, glove_file: str):
-        self._word_to_emb = pd.read_table(
-            glove_file, sep=" ", index_col=0, header=None, quoting=csv.QUOTE_NONE)
-
-    def __getitem__(self, key: str) -> np.ndarray:
-        ret = self._word_to_emb.loc[key].to_numpy()
-        return ret
-
-    @property
-    def wordset(self) -> Set[str]:
-        ret = set(self._word_to_emb.index)
-        return ret
-
-    def find_nearest(self, words: List[str], k: int = 5, metric: str = 'cosine'):
-        """
-        Reference
-        ----------
-        https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html
-        """
-        neigh = NearestNeighbors(n_neighbors=k, metric=metric)
-        neigh.fit(self._word_to_emb.to_numpy())  # fit the model
-
-        input_ = [self[w] for w in words]
-        dists, w_idxs = neigh.kneighbors(
-            input_, n_neighbors=k, return_distance=True)
-        n_words, _ = dists.shape
-
-        ret = []
-        for i in range(n_words):
-            tmp = []
-            words = self._word_to_emb.iloc[w_idxs[i]].index
-            for w, d in zip(words, dists[i]):
-                tmp.append((w, d))
-            ret.append(tmp)
-        return ret
-
-    def get_emb_df(self, words: List[str]):
-        ret = self._word_to_emb.loc[words]
-        return ret
-
-
-class WordSample:
-    def __init__(self, must_include_wordset: Iterable[str], n_samples=10000):
-        with open("./words_alpha.txt", "r") as f:
-            self._words = f.read().splitlines()
-
-        print(f"words_alpha.txt has {len(self._words)} words.")
-        avaliable = set(self._words).intersection(must_include_wordset)
-        print("# of words intersect with `must_include_wordset`: ", len(avaliable))
-
-        # select n_samples data
-        self._selected = np.random.choice(
-            list(avaliable), size=n_samples, replace=False)
-        assert len(set(self._selected)) == n_samples
-
-    @property
-    def words(self) -> List[str]:
-        return self._selected
-
-
-
+def cosine_sim(v1, v2):
+    ret = np.dot(v1, v2) / np.linalg.norm(v1) / np.linalg.norm(v2)
+    return ret
 
 if __name__ == "__main__":
     # set random seed
-    np.random.seed(4200)
+    # np.random.seed(4200)
 
-    glove = GloVe("glove.6B.50d.txt")
+    glove = GloVe("glove.6B.300d.txt")
+    vec = glove["king"] - glove["man"] + glove["woman"]
+    ret = glove.find_nearest_by_vecs([vec])
+    print(ret)
+
     words = WordSample(must_include_wordset=glove.wordset, n_samples=100).words
 
-    word_vectors = glove.get_emb_df(words).to_numpy()
-    print('Total words:', len(words),
-          '\tWord Embedding shapes:', word_vectors.shape)
+    # word_vectors = glove.get_emb_df(words).to_numpy()
+    # print('Total words:', len(words),
+    #       '\tWord Embedding shapes:', word_vectors.shape)
 
-    metric = "cosine"
-    n_neighbors = 100
-    perplexity = 30
-    n_iter = 1000
+    # metric = "cosine"
+    # n_neighbors = 100
+    # perplexity = 30
+    # n_iter = 1000
     # transformer = make_pipeline(
     #     AnnoyTransformer(n_neighbors=n_neighbors, metric=metric),
     #     TSNE(metric='precomputed', perplexity=perplexity,
