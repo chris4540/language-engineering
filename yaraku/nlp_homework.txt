@@ -14,6 +14,7 @@ Exp. Deadline: 13th June.
 Method:
   1. Embedding space: GloVe
   2. clustering methods: KMean, hierarchical, and GMM like 10000 words
+  3. model selection: how many clusters we need, knee, gap, Silhouette
   3. sample appropriate # of words from each cluster, centroid
   4. display them with t-SNE
 
@@ -28,6 +29,13 @@ Clustering methods**:
 
 K-mean:
   https://ai.intelligentonlinetools.com/ml/k-means-clustering-example-word2vec/
+
+Sample size for clustering Analysis:
+https://stats.stackexchange.com/questions/18954/sample-size-for-cluster-analysis
+https://arxiv.org/ftp/arxiv/papers/2003/2003.00381.pdf
+
+Basic + Visualization:
+https://uc-r.github.io/kmeans_clustering
 -----------------------------------------------------------------------------------
 2a.  In the previous exercise, you clustered words.
      Describe how you might cluster multi-word phrases or sentences or paragraphs
