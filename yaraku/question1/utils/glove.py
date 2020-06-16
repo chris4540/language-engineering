@@ -37,13 +37,13 @@ class GloVe:
         ret = self.find_nearest_by_vecs(input_, k=k, metric=metric)
         return ret
 
-    def find_nearest_by_vecs(self, vec: List[np.ndarray], k=5, metric='cosine'):
+    def find_nearest_by_vecs(self, vecs: List[np.ndarray], k=5, metric='cosine'):
         # gram-matrix
         X = np.array([self[w] for w in self._words])
         neigh = NearestNeighbors(n_neighbors=k, metric=metric)
         neigh.fit(X)  # fit the model
         dists, w_idxs = neigh.kneighbors(
-            vec, n_neighbors=k, return_distance=True)
+            vecs, n_neighbors=k, return_distance=True)
         n_words, _ = dists.shape
 
         ret = []
@@ -53,6 +53,12 @@ class GloVe:
             for w, d in zip(words, dists[i]):
                 tmp.append((w, d))
             ret.append(tmp)
+        return ret
+
+    def find_nearest_by_vec(self, vec: np.ndarray, k: int = 5, metric: str = 'cosine'):
+        rets = self.find_nearest_by_vecs([vec], k=k, metric=metric)
+        # return only the first one
+        ret = rets[0]
         return ret
 
     def get_emb_vecs_of(self, words: List[str]) -> Dict[str, np.ndarray]:

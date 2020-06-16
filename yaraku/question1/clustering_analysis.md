@@ -6,6 +6,7 @@
 - [Clustering with Gaussian Mixture Model](https://medium.com/clustering-with-gaussian-mixture-model/clustering-with-gaussian-mixture-model-c695b6cd60da)
 
 ## K-mean
+
 ### General
 - [K-means Clustering: Algorithm, Applications, Evaluation Methods, and Drawbacks by Imad Dabbura](https://towardsdatascience.com/k-means-clustering-algorithm-applications-evaluation-methods-and-drawbacks-aa03e644b48a)
 - [K-means with cosine distance](https://stackoverflow.com/a/61450691/8654623)
@@ -14,6 +15,8 @@
 - [K-means Cluster Analysis](https://uc-r.github.io/kmeans_clustering)
 - [In Depth: k-Means Clustering](https://jakevdp.github.io/PythonDataScienceHandbook/05.11-k-means.html)
 - [K-means vs Mini Batch K-means: A comparison](https://upcommons.upc.edu/bitstream/handle/2117/23414/R13-8.pdf)
+
+
 ### Visualization
 - [Playing with dimensions: from Clustering, PCA, t-SNE... to Carl Sagan!](https://blog.datascienceheroes.com/playing-with-dimensions-from-clustering-pca-t-sne-to-carl-sagan/)
 - [Code example: Plotting-multidimensional-vectors-using-t-SNE](https://github.com/ashutoshsingh25/Plotting-multidimensional-vectors-using-t-SNE)
@@ -22,9 +25,12 @@
 - [scikit-learn: Approximate nearest neighbors in TSNE](https://scikit-learn.org/stable/auto_examples/neighbors/approximate_nearest_neighbors.html?highlight=tsne)
 - [How to plot the output of k-means clustering of word embedding using python?](https://stackoverflow.com/q/60672361/8654623)
 - [Visualising high-dimensional datasets using PCA and t-SNE in Python](https://towardsdatascience.com/visualising-high-dimensional-datasets-using-pca-and-t-sne-in-python-8ef87e7915b)
+- [Visualising Word2Vec Word Vectors(in R)](https://rlbarter.github.io/superheat-examples/word2vec/)
+- [7 ways to label a cluster plot in Python](https://nikkimarinsek.com/blog/7-ways-to-label-a-cluster-plot-python)
+- [bbox and text](https://stackoverflow.com/questions/17086847/box-around-text-in-matplotlib)
+
 ### Elblow methods
-This method is for selecting n_componets.
-Practically, sampling ratio ~ 
+This method is for selecting n_componets. / mini-batch KMean is okay!
 - [GeeksforGeeks Elbow Method for optimal value of k in KMeans](https://www.geeksforgeeks.org/elbow-method-for-optimal-value-of-k-in-kmeans/)
 - [kneed lib](https://github.com/arvkevi/kneed)
 - [Mining of Massive Datasets by J. Leskovec, A. Rajaraman, J. Ullman - Chapter 7](http://www.mmds.org/)
@@ -37,3 +43,10 @@ Almost are in R, but I think it's easy to have a python lib or implementations
 - [Determining Optimal Number Of Clusters In Your Data](https://kkulma.github.io/2017-04-24-determining-optimal-number-of-clusters-in-your-data/)
 - [Determining The Optimal Number Of Clusters: 3 Must Know Methods](https://www.datanovia.com/en/lessons/determining-the-optimal-number-of-clusters-3-must-know-methods/)
 - [Finding Optimal Number Of Clusters for Clustering Algorithm — With python code](https://medium.com/@masarudheena/4-best-ways-to-find-optimal-number-of-clusters-for-clustering-with-python-code-706199fa957c)
+
+
+## Document clustering
+- [Text clustering](http://www.cse.chalmers.se/~richajo/dit862/L13/Text%20clustering.html)
+
+## Topic clustering
+- [Plotting words in text clustering using python](https://stackoverflow.com/a/55287257/8654623)
