@@ -1,6 +1,9 @@
 # Use vscode interactive and then convert this file to jupyter
 # See also: https://code.visualstudio.com/docs/python/jupyter-support-py#_export-a-jupyter-notebook
 
+# Usage:
+#   $ ipython word_clustering_nb.py
+
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
@@ -134,17 +137,24 @@ def get_kmean_model(n_clusters: int):
 
 # %%
 
-# Temp: Load result or generate results
+# ----------------------------------------------------------------------
+# Load or generate statistics for determining the number of clusters
+# ----------------------------------------------------------------------
 k_mean_stat = Path("results/kmean_cluster_err_stat.json")
 if k_mean_stat.exists():
     with k_mean_stat.open("r") as f:
         df_data = json.load(f)
     list_k = df_data["n_clusters"]
+    print(f"Loaded the {k_mean_stat}")
 else:
     list_k = list(range(2, 20+1))
-    sse = dict()
-    silhouette_coffs = dict()
-
+    # formulate the data and save it
+    df_data = {
+        "n_clusters": [],   # Number of clusters
+        "wss": [],  # Within-Cluster-Sum of Squared Errors
+        "mean_sil_coeff": [],  # Mean Silhouette Coefficient
+        "time_used": []
+    }
     for k in list_k:
         stime = time.time()
         km = get_kmean_model(k)
@@ -155,20 +165,21 @@ else:
               f"inertia: {km.inertia_:.3f}; "
               f"silhouette_avg: {silhouette_avg:.3f}; "
               f"time_used: {time_used:.2f}")
-        # Inertia: Sum of distances of samples to their closest cluster center
-        sse[k] = km.inertia_
-        silhouette_coffs[k] = silhouette_avg
+        df_data["n_clusters"].append(k)
+        df_data["wss"].append(float(km.inertia_))
+        df_data["mean_sil_coeff"].append(float(silhouette_avg))
+        df_data["time_used"].append(time_used)
+
     # formulate the data and save it
-    df_data = {
-        "n_clusters": list_k,
-        "wss": [float(sse[k]) for k in list_k],
-        "mean_sil_coeff": [float(silhouette_coffs[k]) for k in list_k]
-    }
     with k_mean_stat.open("w") as f:
-        json.dump(df_data, f)
+        json.dump(df_data, f, indent=1)
+
+# %%
+df = pd.DataFrame.from_dict(df_data)
+df = df.reset_index()
+print(df)
+
 sys.exit(0)
-# df = pd.DataFrame.from_dict(df_data)
-# df = df.reset_index()
 
 # %% [markdown]
 # ### Elbow Method
