@@ -4,6 +4,9 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
+import sys
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 from IPython import get_ipython
 
 # %%
@@ -17,7 +20,15 @@ import seaborn as sns
 import pandas as pd
 from typing import List, Dict
 from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import silhouette_score
+from pathlib import Path
+import json
+# inline matplotlib
 get_ipython().run_line_magic('matplotlib', 'inline')
+
+# %%
+# set seaborn style
+sns.set_style('darkgrid')
 
 
 # %%
@@ -32,6 +43,7 @@ class GloVe:
                 vector = np.asarray(values[1:], "float32")
                 self.embeddings_dict[word] = vector
                 self._words.append(word)
+
                 if i % 100000 == 0:
                     print(f"Processed {i} items")
 
@@ -86,14 +98,17 @@ class GloVe:
         return ret
 
 
+# load the glove data
 glove = GloVe("glove/glove.6B.300d.txt")
 # %%
-words = WordSample("./words_alpha.txt", incl_words=glove.wordset, n_samples=10000).words
+words = WordSample("./words_alpha.txt",
+                   incl_words=glove.wordset, n_samples=10000).words
 
 
 # %%
+# Obtain the embedding vectors from the sampled words
 emb_vecs = glove.get_emb_vecs_of(words)
-# build the data-matrix with shape = (n_samples, emb_dims)
+# build the data-matrix with shape: (n_samples, emb_dims)
 X = np.array([emb_vecs[w] for w in words])
 # normalize it
 length = np.sqrt((X**2).sum(axis=1))[:, None]
@@ -102,57 +117,68 @@ X = X / length
 
 
 # %%
-def get_kmean_model(n_clusters):
+def get_kmean_model(n_clusters: int):
     """
     Factory function to give the kmean clusterer out
     """
-    ret = KMeans(init="k-means++", n_clusters=n_clusters, random_state=10, verbose=0)
+    ret = KMeans(init="k-means++", n_clusters=n_clusters,
+                 random_state=10, verbose=0)
     return ret
 
 # %% [markdown]
 # ## Selecting the number of clusters
-# Consider the elbow method and the silhouette method to have determine the number of clusters.
+# Consider the **elbow method** and the **silhouette method** to have determine the number of clusters.
 # Given the fact that the more clusters we have, the easier to assign the "concept" to each cluster.
 # However, we would like to visualize the results and therefore we search the number of clusters from 2 to 20
 
-# %%
-from sklearn.metrics import silhouette_samples, silhouette_score
-sse = dict()
-silhouette_coffs = dict()
-list_k = list(range(2, 20+1))
-for k in list_k:
-    stime = time.time()
-    clusterer = get_kmean_model(k)
-    cluster_labels = clusterer.fit_predict(X)
-    silhouette_avg = silhouette_score(X, cluster_labels)
-    time_used = time.time() - stime
-    print(f"n_clusters: {k}; inertia: {clusterer.inertia_}; silhouette_avg: {silhouette_avg}; time_used: {time_used}")
-    sse[k] = clusterer.inertia_  # Inertia: Sum of distances of samples to their closest cluster center
-    silhouette_coffs[k] = silhouette_avg
-
 
 # %%
-# make a dataframe for seaborn plotting
-df_data = {
-    "Number of clusters": list_k,
-    "Within-Cluster-Sum of Squared Errors": [sse[k] for k in list_k],
-    "Mean Silhouette Coefficient": [silhouette_coffs[k] for k in list_k]
-}
-df = pd.DataFrame.from_dict(df_data)
-df = df.reset_index()
+
+# Temp: Load result or generate results
+k_mean_stat = Path("results/kmean_cluster_err_stat.json")
+if k_mean_stat.exists():
+    with k_mean_stat.open("r") as f:
+        df_data = json.load(f)
+    list_k = df_data["n_clusters"]
+else:
+    list_k = list(range(2, 20+1))
+    sse = dict()
+    silhouette_coffs = dict()
+
+    for k in list_k:
+        stime = time.time()
+        km = get_kmean_model(k)
+        labels = km.fit_predict(X)
+        silhouette_avg = silhouette_score(X, labels)
+        time_used = time.time() - stime
+        print(f"n_clusters: {k}; "
+              f"inertia: {km.inertia_:.3f}; "
+              f"silhouette_avg: {silhouette_avg:.3f}; "
+              f"time_used: {time_used:.2f}")
+        # Inertia: Sum of distances of samples to their closest cluster center
+        sse[k] = km.inertia_
+        silhouette_coffs[k] = silhouette_avg
+    # formulate the data and save it
+    df_data = {
+        "n_clusters": list_k,
+        "wss": [float(sse[k]) for k in list_k],
+        "mean_sil_coeff": [float(silhouette_coffs[k]) for k in list_k]
+    }
+    with k_mean_stat.open("w") as f:
+        json.dump(df_data, f)
+sys.exit(0)
+# df = pd.DataFrame.from_dict(df_data)
+# df = df.reset_index()
 
 # %% [markdown]
 # ### Elbow Method
-
-# %%
-sns.set_style('darkgrid')
-sns.set_palette('muted')
 
 
 # %%
 figsize = (18, 7)
 plt.subplots(figsize=figsize)
-ax = sns.lineplot(x="Number of clusters", y="Within-Cluster-Sum of Squared Errors", data=df)
+ax = sns.lineplot(x="Number of clusters",
+                  y="Within-Cluster-Sum of Squared Errors", data=df)
 x = list_k
 plt.xticks(np.arange(min(x), max(x)+1, 1))
 plt.show()
@@ -161,7 +187,8 @@ plt.show()
 # %%
 # use KneeLocator to find the number of clusters
 # the definition is mentioned in https://raghavan.usc.edu//papers/kneedle-simplex11.pdf page 2
-kneedle = KneeLocator(df["Number of clusters"], df["Within-Cluster-Sum of Squared Errors"], S=1.0, curve='convex', direction='decreasing', online=False, interp_method="interp1d")
+kneedle = KneeLocator(df["Number of clusters"], df["Within-Cluster-Sum of Squared Errors"],
+                      S=1.0, curve='convex', direction='decreasing', online=False, interp_method="interp1d")
 
 
 # %%
@@ -180,7 +207,8 @@ plt.show()
 
 # %%
 print(f"The number of cluster according to elbow method: {kneedle.knee}")
-print(f"The corresponding Within-Cluster-Sum of Squared Errors (WSS): {kneedle.knee_y}")
+print(
+    f"The corresponding Within-Cluster-Sum of Squared Errors (WSS): {kneedle.knee_y}")
 
 # %% [markdown]
 # ### The Silhouette Method
@@ -190,7 +218,8 @@ print(f"The corresponding Within-Cluster-Sum of Squared Errors (WSS): {kneedle.k
 # %%
 figsize = (18, 7)
 plt.subplots(figsize=figsize)
-ax = sns.lineplot(x="Number of clusters", y="Mean Silhouette Coefficient", data=df)
+ax = sns.lineplot(x="Number of clusters",
+                  y="Mean Silhouette Coefficient", data=df)
 x = list_k
 plt.xticks(np.arange(min(x), max(x)+1, 1))
 plt.show()
@@ -214,7 +243,6 @@ for i, v in enumerate(km.cluster_centers_):
 
 
 # %%
-from sklearn.decomposition import PCA
 pca = PCA(n_components=2)
 pca_result = pca.fit_transform(X)
 
@@ -233,24 +261,25 @@ def plot_scatter(df, label_to_txt):
     Helper function the plot the scatter plot
     """
     n_clusters = df["labels"].unique()
-    fig, ax = plt.subplots(figsize=(16,10))
+    fig, ax = plt.subplots(figsize=(16, 10))
 
     scatter_palette = sns.color_palette("hls", n_clusters)
     txt_palette = sns.color_palette("hls", n_clusters, desat=0.6)
     for i in range(n_clusters):
         plt.scatter(
-            x=df.loc[df['labels']==i, 'x'],
-            y=df.loc[df['labels']==i, 'y'],
+            x=df.loc[df['labels'] == i, 'x'],
+            y=df.loc[df['labels'] == i, 'y'],
             color=scatter_palette[i],
             alpha=0.1)
         # find the location of the text
-        xtext, ytext = df.loc[df['labels']==i, ['x', 'y']].mean()
+        xtext, ytext = df.loc[df['labels'] == i, ['x', 'y']].mean()
         # set up the box around the text
-        bbox_props = dict(boxstyle="round,pad=0.3", fc=txt_palette[i], alpha=0.8, lw=1)
+        bbox_props = dict(boxstyle="round,pad=0.3",
+                          fc=txt_palette[i], alpha=0.8, lw=1)
         plt.annotate(label_to_txt[i], (xtext, ytext),
-            horizontalalignment='center',
-            verticalalignment='center',
-            size=15, color='k', bbox=bbox_props, alpha=0.8)
+                     horizontalalignment='center',
+                     verticalalignment='center',
+                     size=15, color='k', bbox=bbox_props, alpha=0.8)
     return ax
 
 
@@ -259,27 +288,26 @@ data["labels"].unique()
 
 
 # %%
-fig, ax = plt.subplots(figsize=(16,10))
+fig, ax = plt.subplots(figsize=(16, 10))
 scatter_palette = sns.color_palette("hls", n_clusters)
 txt_palette = sns.color_palette("hls", n_clusters, desat=0.6)
 for i in range(n_clusters):
     plt.scatter(
-        x=data.loc[data['labels']==i, 'x'],
-        y=data.loc[data['labels']==i, 'y'],
+        x=data.loc[data['labels'] == i, 'x'],
+        y=data.loc[data['labels'] == i, 'y'],
         color=scatter_palette[i],
         alpha=0.1)
-    xtext, ytext = data.loc[data['labels']==i, ['x','y']].mean()
-    bbox_props = dict(boxstyle="round,pad=0.3", fc=txt_palette[i], alpha=0.8, lw=1)
+    xtext, ytext = data.loc[data['labels'] == i, ['x', 'y']].mean()
+    bbox_props = dict(boxstyle="round,pad=0.3",
+                      fc=txt_palette[i], alpha=0.8, lw=1)
     plt.annotate(label_to_word[i], (xtext, ytext),
-        horizontalalignment='center',
-        verticalalignment='center',
-        size=15, color='k', bbox=bbox_props, alpha=0.8)
+                 horizontalalignment='center',
+                 verticalalignment='center',
+                 size=15, color='k', bbox=bbox_props, alpha=0.8)
 plt.show()
 
 
 # %%
-import time
-from sklearn.manifold import TSNE
 time_start = time.time()
 tsne = TSNE(n_components=2, verbose=1, perplexity=400, n_iter=300)
 tsne_results = tsne.fit_transform(X)
@@ -287,7 +315,7 @@ print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
 
 
 # %%
-plt.figure(figsize=(16,10))
+plt.figure(figsize=(16, 10))
 sns.scatterplot(
     x=tsne_results[:, 0], y=tsne_results[:, 1],
     hue=labels,
@@ -299,10 +327,8 @@ sns.scatterplot(
 
 # %%
 
-
-
 # %%
-df = pd.DataFrame.from_dict(silhouette_scores, orient="index", columns=["Mean Silhouette Coefficient"])
+df = pd.DataFrame.from_dict(silhouette_scores, orient="index", columns=[
+                            "Mean Silhouette Coefficient"])
 df.index.name = "Number of clusters"
 df = df.reset_index()
-
