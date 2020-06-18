@@ -79,10 +79,11 @@
 
 % Command to print out the standardized title page
 \renewcommand{\maketitle}{
-  %\newgeometry{top=75mm,bottom=40mm,left=26mm,right=26mm}
+  % \newgeometry{top=75mm,bottom=40mm,left=26mm,right=26mm}
   \thispagestyle{empty}
   \ifinswedish\selectlanguage{swedish}\fi
-  \begin{textblock}{158}(10,15)%
+  % \begin{textblock}{158}(10,15)%
+  \begin{textblock}{158}(0,15)%
     % \begin{minipage}[t]{27mm}
     %   \vspace{0pt} % apparently needed to make the vertical alignment work
     %   \includegraphics[width=26mm]{KTH_Logotyp_CMYK_2013}
@@ -100,29 +101,29 @@
       \end{tabular}
       \else
       \begin{tabular}{p{3cm}p{3cm}p{3cm}}
-        \textbf{REPORT} & \textbf{Date} & \textbf{Reference number} \\
-        & \@date & \@diarienr \\
+        \textbf{Assignment} & \textbf{Date} &  \\
+        & \@date \\
         \multicolumn{3}{l}{\textbf{Created by}} \\
         \multicolumn{3}{l}{\@author} \\
       \end{tabular}
       \fi
     \end{minipage}
   \end{textblock}%
-  \vspace*{3cm}
+  \vspace*{0.5cm}
   \begin{huge}
     \begin{flushleft}
       \noindent\sffamily\bfseries \@title \par
     \end{flushleft}
   \end{huge}
-  \ifx\@subtitle\@empty\relax
-  \else
-  \begin{Large}
-    \vspace{-1ex}
-    \begin{flushleft}
-      \noindent\sffamily\bfseries \@subtitle \par
-    \end{flushleft}
-  \end{Large}
-  \fi
+  % \ifx\@subtitle\@empty\relax
+  % \else
+  % \begin{Large}
+  %   \vspace{-1ex}
+  %   \begin{flushleft}
+  %     \noindent\sffamily\bfseries \@subtitle \par
+  %   \end{flushleft}
+  % \end{Large}
+  % \fi
 }
 
 \endinput

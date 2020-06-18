@@ -18,7 +18,7 @@
 \title{NLP assignment from yaraku}
 % \subtitle{This will be read by all employees}
 \author{Chun Hung Lin, Chris}
-\diarienr{00000-00}
+% \diarienr{00000-00}
 
 \begin{document}
 \maketitle
@@ -44,14 +44,66 @@ In the previous exercise, you clustered words.
 Describe how you might cluster multi-word phrases or sentences or paragraphs of
 arbitrary lengths.
 
-\textbf{Ans:}
-xxxxxxxxxxxxxxx
+% Ref:
+% https://towardsdatascience.com/document-embedding-techniques-fed3e7a6a25d#a7aa
+\subsection*{Ans:}
+
+Let's consider a multi-word phrase, a sentence or a paragraph to be a document.
+
+\textbf{Latent Dirichlet Allocation}
+
+This method cluseter documents into K "topics" which means the document should 
+be related to certain topic or theme.
+
+This is a Bayesian network. The idea is considering a hidden random
+varaible called "topic" and each topic has a bag-of-words which follows 
+dirichlet distribution. 
+
+The bayesian network can be estimated by maximize the Evidence Lower Bound (ELBO)
+through the variational EM algorithm or estimated by Gibbs sampling method.
+
+Scikit-learn has a good introduction to 
+\href{https://scikit-learn.org/stable/modules/decomposition.html#latentdirichletallocation}{the LDA method.}
+
+% -----------------------------------------------------------------------
+\textbf{tf-idf}
+
+In information retrival, tf-idf is a useful technique to represent a document by 
+"terms". Each unqiue word is a dimension of the tf-idf vector space. Notes that
+tf-idf is a bag-of-words representation approach.
+
+However, the space containing tf-idf vectors are very large and suffering from 
+the curse of dimensionality. Usually we would employ the following steps to 
+reduce the dimensionality.
+
+\begin{itemize}
+    \item Remove stop words (a, the, does, has etc.)
+    \item Case folding (to lower case)
+    \item Remove diacritics (e.g. ö -> o, ä -> a)
+    \item Text normalization (map words to their canonical form)
+    \item lemmatization
+    \item replace numbers, web, and email etc. to tokens (numbers becomes \texttt{<number>} etc.)
+\end{itemize}
+
+With the tf-idf vector, we can check the similarity between document
+using cosine distance (similarity) and/or Euclidean distance and so-on.
+
+We can consider tf-idf as a representation of a document in vector space and then
+we can do clusetering as what we did in the previous exercise.
+
+\textbf{Averaging word embeddings}
+It averages the embedding vectors of words in the document.
+
+% ---------------------------------------------------------------------------
 
 \subsection{Question 2b (Optional)}
 Describe how you might cluster words from different languages
 
-\textbf{Ans:}
-xxxxxxxxxxxxxxx
+\subsection{Ans:}
+% Skip gram / CBOW
+% tokenization
+% Mention some tricky stuff
+
 % -----------------------------------------------------------------
 \section{Question 3}
 The earliest deep-learning attention mechanism was the method proposed by Bahdanau
