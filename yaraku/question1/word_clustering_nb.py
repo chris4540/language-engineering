@@ -7,13 +7,12 @@
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
-import sys
-from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
 from IPython import get_ipython
 
 # %%
-from utils.word_sample import WordSample
+import sys
+from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 import numpy as np
 from kneed import KneeLocator
@@ -21,7 +20,7 @@ import time
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from typing import List, Dict
+from typing import List, Dict, Iterable
 from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import silhouette_score
 from pathlib import Path
@@ -58,9 +57,20 @@ class GloVe:
         return ret
 
     @property
-    def wordset(self) -> List[str]:
+    def words(self) -> List[str]:
         ret = list(self._words)
         return ret
+
+    @words.setter
+    def words(self, val: Iterable[str]):
+        words = []
+        for w in val:
+            if w not in self.embeddings_dict:
+                continue
+            else:
+                words.append(w)
+
+        self._words = words
 
     def find_nearest(self, words: List[str], k: int = 5, metric: str = 'cosine'):
         """
@@ -101,32 +111,72 @@ class GloVe:
         return ret
 
 
-# load the glove data
-glove = GloVe("glove/glove.6B.300d.txt")
 # %%
-words = WordSample("./words_alpha.txt",
-                   incl_words=glove.wordset, n_samples=10000).words
+class WordSampler:
+    def __init__(self, file, incl_words: Iterable[str], n_samples=10000, random_state=40):
+        with open(file, "r", encoding="utf-8") as f:
+            self._words = f.read().splitlines()
 
+        print(f"{file} has {len(self._words)} words.")
+        avaliable = set(self._words).intersection(incl_words)
+        print("# of words intersect with `incl_words`: ", len(avaliable))
 
-# %%
-# Obtain the embedding vectors from the sampled words
-emb_vecs = glove.get_emb_vecs_of(words)
-# build the data-matrix with shape: (n_samples, emb_dims)
-X = np.array([emb_vecs[w] for w in words])
-# normalize it
-length = np.sqrt((X**2).sum(axis=1))[:, None]
-X = X / length
-# TODO: add more notes why we use normalized (cosine distacne)
+        # select n_samples data
+        rnd_state = np.random.RandomState(random_state)
+        self._selected = rnd_state.choice(
+            list(avaliable), size=n_samples, replace=False)
+        assert len(set(self._selected)) == n_samples
+
+    @property
+    def words(self) -> List[str]:
+        return self._selected
 
 
 # %%
 def get_kmean_model(n_clusters: int):
     """
-    Factory function to give the kmean clusterer out
+    Simple factory method to generate a kmean clusterer with pre-config params
     """
     ret = KMeans(init="k-means++", n_clusters=n_clusters,
                  random_state=10, verbose=0)
     return ret
+
+# %%
+
+
+class PlotConfig:
+    """
+    Plotting related configuration
+    """
+    figsize = (18, 7)
+
+
+plt_cfg = PlotConfig()
+
+# %%
+# load the glove data
+glove = GloVe("glove/glove.6B.300d.txt")
+# make a sampler
+sampler = WordSampler("./words_alpha.txt",
+                      incl_words=glove.words, n_samples=10000)
+# sample words from the sampler
+sampled_words = sampler.words
+# set our embedding model use sampled words
+glove.words = sampled_words
+
+# %%
+# Obtain the embedding vectors from the sampled words
+emb_vecs = glove.get_emb_vecs_of(sampled_words)
+
+
+# %%
+#
+# build the data-matrix with shape: (n_samples, emb_dims)
+X = np.array([emb_vecs[w] for w in sampled_words])
+# normalize it
+length = np.sqrt((X**2).sum(axis=1))[:, None]
+X = X / length
+
 
 # %% [markdown]
 # ## Selecting the number of clusters
@@ -179,31 +229,42 @@ df = pd.DataFrame.from_dict(df_data)
 df = df.reset_index()
 print(df)
 
-sys.exit(0)
-
 # %% [markdown]
-# ### Elbow Method
+# Elbow Method
+# Generally speaking, the within cluster SSE decreases as the number of clusters \
+# increase. We would like to find the plot of the point of inflection on the curve.
+# Geometrically, we would like to find the point at which the curvature of the curve is
+# maximum.
+# A two-dimensional curve of a 1-d function:
+#   $g(x,y) = f(x) - y = 0$
+# The curvature is:
+#   $\kappa = \frac{f''}{(1+{f'}^{2})^{3/2}}$
+# See the knee definition in:
+# https://raghavan.usc.edu//papers/kneedle-simplex11.pdf
 
 
 # %%
-figsize = (18, 7)
-plt.subplots(figsize=figsize)
-ax = sns.lineplot(x="Number of clusters",
-                  y="Within-Cluster-Sum of Squared Errors", data=df)
-x = list_k
-plt.xticks(np.arange(min(x), max(x)+1, 1))
-plt.show()
-
+# Plot the line plot
+plt.subplots(figsize=plt_cfg.figsize)
+ax = sns.lineplot(x="n_clusters",
+                  y="wss", data=df)
+plt.xticks(np.arange(min(list_k), max(list_k)+1, 1))
+ax.set(xlabel="Number of clusters",
+       ylabel="Within-Cluster-Sum of Squared Errors")
+# plt.show()
+plt.tight_layout()
+plt.savefig("n_clusters_against_wss.png")
 
 # %%
-# use KneeLocator to find the number of clusters
-# the definition is mentioned in https://raghavan.usc.edu//papers/kneedle-simplex11.pdf page 2
-kneedle = KneeLocator(df["Number of clusters"], df["Within-Cluster-Sum of Squared Errors"],
+kneedle = KneeLocator(df["n_clusters"], df["wss"],
                       S=1.0, curve='convex', direction='decreasing', online=False, interp_method="interp1d")
+print("The number of cluster according to elbow method:" , kneedle.knee)
+print("The corresponding Within-Cluster-Sum of Squared Errors (WSS):", kneedle.knee_y)
 
 
+sys.exit(0)
 # %%
-kneedle.plot_knee(figsize=figsize)
+kneedle.plot_knee(figsize=plt_cfg.figsize)
 plt.xlabel("Number of clusters")
 plt.ylabel("Within-Cluster-Sum of Squared Errors")
 x = list_k
@@ -212,14 +273,9 @@ plt.show()
 
 
 # %%
-kneedle.plot_knee_normalized(figsize=figsize)
+kneedle.plot_knee_normalized(figsize=plt_cfg.figsize)
 plt.show()
 
-
-# %%
-print(f"The number of cluster according to elbow method: {kneedle.knee}")
-print(
-    f"The corresponding Within-Cluster-Sum of Squared Errors (WSS): {kneedle.knee_y}")
 
 # %% [markdown]
 # ### The Silhouette Method
@@ -228,7 +284,7 @@ print(
 
 # %%
 figsize = (18, 7)
-plt.subplots(figsize=figsize)
+plt.subplots(figsize=plt_cfg.figsize)
 ax = sns.lineplot(x="Number of clusters",
                   y="Mean Silhouette Coefficient", data=df)
 x = list_k
@@ -239,7 +295,7 @@ plt.show()
 # The Silhouette Method suggests number of clusters to be 2
 
 # %%
-n_clusters = 2
+n_clusters = 7
 km = get_kmean_model(n_clusters)
 labels = km.fit_predict(X)
 

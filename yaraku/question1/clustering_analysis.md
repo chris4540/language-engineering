@@ -4,6 +4,7 @@
 ## Gaussian mixtures
 - [In Depth: Gaussian Mixture Models](https://jakevdp.github.io/PythonDataScienceHandbook/05.12-gaussian-mixtures.html)
 - [Clustering with Gaussian Mixture Model](https://medium.com/clustering-with-gaussian-mixture-model/clustering-with-gaussian-mixture-model-c695b6cd60da)
+- [BIC/AIC score with a Gaussian Mixture Model](https://towardsdatascience.com/clustering-metrics-better-than-the-elbow-method-6926e1f723a6)
 
 ## K-mean
 
