@@ -59,7 +59,47 @@ in a paper on sequence to sequence models.
 
 Name some other variants of attention mechanisms (other than Bahdanau's method).
 
-% Good starting point: ruder.io/deep-learning-nlp-best-practices/index.html#attention
+\subsection*{Ans:}
+
+\textbf{Bahdanau mechanism}
+
+
+Bahdanau purposed the attention model which is to solve the bottleneck of using 
+fixed-length vector in the basic encoder-decoder architecture. It is obvious to understand
+that encoding a long sentence into a fixed-length context vector (representation) 
+will lose the information like position information (i.e. How the word orders in the sentence)
+and alignment between source and target sentences.
+
+\textbf{Luong mechanism}
+
+In this paper \cite{luong-etal-2015-effective}, they purposed 3 other method to calculate the alignment weightings
+and make modifcation to the Bahdanau's method. The modifcations are 
+\begin{itemize}
+    \item use the hidden state at the top LSTM or RNN-based network rs in both the encoder and decoder
+    \item use the current decoder state to compute the alignment weightings
+\end{itemize}
+
+Also, Luong et al work \cite{luong-etal-2015-effective} purposed global and local attentions.
+
+\textbf{Self Attention}
+
+Self-attention was purposed by Cheng et. al. \cite{cheng-etal-2016-long}. It is 
+original to create a facility to give the RNN-famaily models stronger memorization 
+capability and the ability to discover relations among tokens.
+
+\textbf{Scaled Dot-Product and Multi-Head Self Attention}
+
+It is the core component of the transformer model. \cite{vaswani2017attention}
+Multi-head attention makes the model have different representations of 
+learnable subspaces for keys, values and queries inputs of each layer.
+
+
+% Good starting points: 
+% 1. ruder.io/deep-learning-nlp-best-practices/index.html#attention
+% 2. towardsdatascience.com/attn-illustrated-attention-5ec4ad276ee3#7eef
+
+% Ref:
+% 1. lilianweng.github.io/lil-log/2018/06/24/attention-attention.html#summary
 
 \section{Question 4}
 \subsection{Question 4a}
@@ -73,4 +113,9 @@ that an ANN must have to compute the XOR function.
 \section{Question 5}
 How can you tell if an ML model is underfitting and overfitting?
 
+% ---------------------------------------------------------------------
+\medskip
+
+\bibliographystyle{unsrt}
+\bibliography{ref}
 \end{document}
