@@ -20,7 +20,7 @@ class Word2Vec(object):
                  learning_rate=0.025, epochs=5, use_corrected=True, use_lr_scheduling=True):
         """
         Constructs a new instance.
-        
+
         :param      filenames:      A list of filenames to be used as the training material
         :param      dimension:      The dimensionality of the word embeddings
         :param      window_size:    The size of the context window
@@ -53,14 +53,14 @@ class Word2Vec(object):
     @property
     def vocab_size(self):
         return self.__V
-        
+
 
     def clean_line(self, line):
         """
         The function takes a line from the text file as a string,
         removes all the punctuation and digits from it and returns
         all words in the cleaned line as a list
-        
+
         :param      line:  The line
         :type       line:  str
         """
@@ -92,7 +92,7 @@ class Word2Vec(object):
     def get_context(self, sent, i):
         """
         Returns the context of the word `sent[i]` as a list of word indices
-        
+
         :param      sent:  The sentence
         :type       sent:  list
         :param      i:     Index of the focus word in the sentence
@@ -100,7 +100,7 @@ class Word2Vec(object):
         """
         #
         # REPLACE WITH YOUR CODE
-        # 
+        #
         return []
 
 
@@ -116,7 +116,7 @@ class Word2Vec(object):
         """
         #
         # REPLACE WITH YOUR CODE
-        # 
+        #
         return [], []
 
 
@@ -131,7 +131,7 @@ class Word2Vec(object):
         """
         Sample a `number` of negatives examples with the words in `xb` and `pos` words being
         in the taboo list, i.e. those should be replaced if sampled.
-        
+
         :param      number:     The number of negative examples to be sampled
         :type       number:     int
         :param      xb:         The index of the current focus word
@@ -160,7 +160,7 @@ class Word2Vec(object):
         for ep in range(self.__epochs):
             for i in tqdm(range(N)):
                 #
-                # YOUR CODE HERE 
+                # YOUR CODE HERE
                 #
                 pass
 
@@ -168,24 +168,24 @@ class Word2Vec(object):
     def find_nearest(self, words, metric):
         """
         Function returning k nearest neighbors with distances for each word in `words`
-        
-        We suggest using nearest neighbors implementation from scikit-learn 
+
+        We suggest using nearest neighbors implementation from scikit-learn
         (https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html). Check
         carefully their documentation regarding the parameters passed to the algorithm.
-    
+
         To describe how the function operates, imagine you want to find 5 nearest neighbors for the words
-        "Harry" and "Potter" using some distance metric `m`. 
+        "Harry" and "Potter" using some distance metric `m`.
         For that you would need to call `self.find_nearest(["Harry", "Potter"], k=5, metric='m')`.
         The output of the function would then be the following list of lists of tuples (LLT)
         (all words and distances are just example values):
-    
+
         [[('Harry', 0.0), ('Hagrid', 0.07), ('Snape', 0.08), ('Dumbledore', 0.08), ('Hermione', 0.09)],
          [('Potter', 0.0), ('quickly', 0.21), ('asked', 0.22), ('lied', 0.23), ('okay', 0.24)]]
-        
+
         The i-th element of the LLT would correspond to k nearest neighbors for the i-th word in the `words`
         list, provided as an argument. Each tuple contains a word and a similarity/distance metric.
         The tuples are sorted either by descending similarity or by ascending distance.
-        
+
         :param      words:   Words for the nearest neighbors to be found
         :type       words:   list
         :param      metric:  The similarity/distance metric
@@ -260,7 +260,7 @@ class Word2Vec(object):
         self.train()
         self.write_to_file()
         self.interact()
-        
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='word2vec embeddings toolkit')

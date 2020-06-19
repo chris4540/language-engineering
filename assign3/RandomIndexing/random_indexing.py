@@ -24,7 +24,7 @@ class RandomIndexing(object):
     ## @brief      Object initializer Initializes the Random Indexing algorithm
     ##             with the necessary hyperparameters and the textfiles that
     ##             will serve as corpora for generating word vectors
-    ##             
+    ##
     ## The `self.__vocab` instance variable is initialized as a Python's set. If you're unfamiliar with sets, please
     ## follow this link to find out more: https://docs.python.org/3/tutorial/datastructures.html#sets.
     ##
@@ -60,7 +60,7 @@ class RandomIndexing(object):
         self.__rws = right_window_size
         self.__cv = None
         self.__rv = None
-        
+
 
     ##
     ## @brief      A function cleaning the line from punctuation and digits
@@ -105,7 +105,7 @@ class RandomIndexing(object):
     ##             Goes through all the cleaned lines and adds each word of the
     ##             line to a vocabulary stored in a variable `self.__vocab`. The
     ##             words, stored in the vocabulary, should be unique.
-    ##             
+    ##
     ##             **Note**: this function is where the first pass through all files is made
     ##             (using the `text_gen` function)
     ##
@@ -126,15 +126,15 @@ class RandomIndexing(object):
 
     ##
     ## @brief      Creates word embeddings using Random Indexing.
-    ## 
+    ##
     ## The function stores the created word embeddings (or so called context vectors) in `self.__cv`.
     ## Random vectors used to create word embeddings are stored in `self.__rv`.
-    ## 
+    ##
     ## Context vectors are created by looping through each cleaned line and updating the context
     ## vectors following the Random Indexing approach, i.e. using the words in the sliding window.
     ## The size of the sliding window is governed by two instance variables `self.__lws` (left window size)
     ## and `self.__rws` (right window size).
-    ## 
+    ##
     ## For instance, let's consider a sentence:
     ##      I really like programming assignments.
     ## Let's assume that the left part of the sliding window has size 1 (`self.__lws` = 1) and the right
@@ -153,13 +153,13 @@ class RandomIndexing(object):
     ## \endverbatim
     ## where "^" denotes the word we're currently at, "l" denotes the words in the left part of the
     ## sliding window and "r" denotes the words in the right part of the sliding window.
-    ## 
+    ##
     ## Implementation tips:
     ## - make sure to understand how generators work! Refer to the documentation of a `text_gen` function
     ##   for more description.
     ## - the easiest way is to make `self.__cv` and `self.__rv` dictionaries with keys being words (as strings)
     ##   and values being the context vectors.
-    ## 
+    ##
     ## **Note**: this function is where the second pass through all files is made (using the `text_gen` function).
     ##         The first one was done when calling `build_vocabulary` function. This might not the most
     ##         efficient solution from the time perspective, but it's quite efficient from the memory
@@ -173,13 +173,13 @@ class RandomIndexing(object):
 
     ##
     ## @brief      Function returning k nearest neighbors with distances for each word in `words`
-    ## 
-    ## We suggest using nearest neighbors implementation from scikit-learn 
+    ##
+    ## We suggest using nearest neighbors implementation from scikit-learn
     ## (https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.NearestNeighbors.html). Check
     ## carefully their documentation regarding the parameters passed to the algorithm.
-    ## 
+    ##
     ## To describe how the function operates, imagine you want to find 5 nearest neighbors for the words
-    ## "Harry" and "Potter" using cosine distance (which can be computed as 1 - cosine similarity). 
+    ## "Harry" and "Potter" using cosine distance (which can be computed as 1 - cosine similarity).
     ## For that you would need to call `self.find_nearest(["Harry", "Potter"], k=5, metric='cosine')`.
     ## The output of the function would then be the following list of lists of tuples (LLT)
     ## (all words and distances are just example values):
@@ -240,7 +240,7 @@ class RandomIndexing(object):
 
 
     ##
-    ## @brief      Writes a vocabulary as a text file containing one word from the vocabulary per row. 
+    ## @brief      Writes a vocabulary as a text file containing one word from the vocabulary per row.
     ##
     def write_vocabulary(self):
         with open('vocab.txt', 'w') as f:
@@ -250,11 +250,11 @@ class RandomIndexing(object):
 
     ##
     ## @brief      Main function call to train word embeddings
-    ## 
+    ##
     ## If vocabulary file exists, it reads the vocabulary from the file (to speed up the program),
     ## otherwise, it builds a vocabulary by reading and cleaning all the Harry Potter books and
     ## storing unique words.
-    ## 
+    ##
     ## After the vocabulary is created/read, the word embeddings are created using Random Indexing.
     ##
     def train(self):
@@ -270,7 +270,7 @@ class RandomIndexing(object):
             start = time.time()
             self.build_vocabulary()
             spinner.succeed(text="Built vocabulary in {}s. Size: {} words".format(round(time.time() - start, 2), ri.vocabulary_size))
-        
+
         spinner.start(text="Creating vectors using random indexing...")
         start = time.time()
         self.create_word_vectors()
@@ -280,7 +280,7 @@ class RandomIndexing(object):
 
 
     ##
-    ## @brief      Trains word embeddings and enters the interactive loop, where you can 
+    ## @brief      Trains word embeddings and enters the interactive loop, where you can
     ##             enter a word and get a list of k nearest neighours.
     ##
     def train_and_persist(self):
