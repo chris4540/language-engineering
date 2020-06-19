@@ -52,28 +52,28 @@ Let's consider a multi-word phrase, a sentence or a paragraph to be a document.
 
 \textbf{Latent Dirichlet Allocation}
 
-This method cluseter documents into K "topics" which means the document should 
+This method cluseter documents into K "topics" which means the document should
 be related to certain topic or theme.
 
 This is a Bayesian network. The idea is considering a hidden random
-varaible called "topic" and each topic has a bag-of-words which follows 
-dirichlet distribution. 
+varaible called "topic" and each topic has a bag-of-words which follows
+dirichlet distribution.
 
 The bayesian network can be estimated by maximize the Evidence Lower Bound (ELBO)
 through the variational EM algorithm or estimated by Gibbs sampling method.
 
-Scikit-learn has a good introduction to 
+Scikit-learn has a good introduction to
 \href{https://scikit-learn.org/stable/modules/decomposition.html#latentdirichletallocation}{the LDA method.}
 
 % -----------------------------------------------------------------------
 \textbf{tf-idf}
 
-In information retrival, tf-idf is a useful technique to represent a document by 
+In information retrival, tf-idf is a useful technique to represent a document by
 "terms". Each unqiue word is a dimension of the tf-idf vector space. Notes that
 tf-idf is a bag-of-words representation approach.
 
-However, the space containing tf-idf vectors are very large and suffering from 
-the curse of dimensionality. Usually we would employ the following steps to 
+However, the space containing tf-idf vectors are very large and suffering from
+the curse of dimensionality. Usually we would employ the following steps to
 reduce the dimensionality.
 
 \begin{itemize}
@@ -100,7 +100,28 @@ It averages the embedding vectors of words in the document.
 Describe how you might cluster words from different languages
 
 \subsection{Ans:}
-% Skip gram / CBOW
+I would suggest to use the skip-gram model \cite{mikolov2013distributed}
+to learn the vector representation of words and then for clustering.
+Take Japanese as the target language.
+
+First we need to have a text corpus of the target language.
+
+Second, we need to tokenize our corpus. I would recommend to use
+\href{https://taku910.github.io/mecab/}{MeCab} (for Japanese)
+or \href{https://stanfordnlp.github.io/stanza/}{Stanza} (for other language)
+to create tokens from sentences.
+
+Third, we need to choose hyperparameters like context window size and vector dimension.
+If we have appropriate evaluation tasks, we could do cross validation to find
+a set of hyperparameters.
+
+Although we have the context-target word pairs to train the skip-gram model, we
+could introduce negative sampling to speed up the learning process. \cite{mikolov2013distributed}
+
+
+% Skip gram :
+% See also: word2vec: CBOW & skip-gram performance wrt training dataset size
+%   https://stackoverflow.com/a/40507093/8654623
 % tokenization
 % Mention some tricky stuff
 
@@ -116,16 +137,16 @@ Name some other variants of attention mechanisms (other than Bahdanau's method).
 \textbf{Bahdanau mechanism}
 
 
-Bahdanau purposed the attention model which is to solve the bottleneck of using 
+Bahdanau purposed the attention model which is to solve the bottleneck of using
 fixed-length vector in the basic encoder-decoder architecture. It is obvious to understand
-that encoding a long sentence into a fixed-length context vector (representation) 
+that encoding a long sentence into a fixed-length context vector (representation)
 will lose the information like position information (i.e. How the word orders in the sentence)
 and alignment between source and target sentences.
 
 \textbf{Luong mechanism}
 
 In this paper \cite{luong-etal-2015-effective}, they purposed 3 other method to calculate the alignment weightings
-and make modifcation to the Bahdanau's method. The modifcations are 
+and make modifcation to the Bahdanau's method. The modifcations are
 \begin{itemize}
     \item use the hidden state at the top LSTM or RNN-based network rs in both the encoder and decoder
     \item use the current decoder state to compute the alignment weightings
@@ -135,18 +156,18 @@ Also, Luong et al work \cite{luong-etal-2015-effective} purposed global and loca
 
 \textbf{Self Attention}
 
-Self-attention was purposed by Cheng et. al. \cite{cheng-etal-2016-long}. It is 
-original to create a facility to give the RNN-famaily models stronger memorization 
+Self-attention was purposed by Cheng et. al. \cite{cheng-etal-2016-long}. It is
+original to create a facility to give the RNN-famaily models stronger memorization
 capability and the ability to discover relations among tokens.
 
 \textbf{Scaled Dot-Product and Multi-Head Self Attention}
 
 It is the core component of the transformer model. \cite{vaswani2017attention}
-Multi-head attention makes the model have different representations of 
+Multi-head attention makes the model have different representations of
 learnable subspaces for keys, values and queries inputs of each layer.
 
 
-% Good starting points: 
+% Good starting points:
 % 1. ruder.io/deep-learning-nlp-best-practices/index.html#attention
 % 2. towardsdatascience.com/attn-illustrated-attention-5ec4ad276ee3#7eef
 
