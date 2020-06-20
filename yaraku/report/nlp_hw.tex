@@ -7,9 +7,15 @@
 % have it in your path, for example:
 % export TEXINPUTS=/path/to/logo/location//:$TEXINPUTS
 
+% -----------------------
 % Packages
+% -----------------------
 \usepackage{hyperref}
-% Packages
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mwe}
+\usepackage{subfig}
+% -----------------------
 
 % Env
 \setlength{\parindent}{0em}
@@ -188,7 +194,7 @@ How can you tell if an ML model is underfitting and overfitting?
 % References:
 %   https://towardsdatascience.com/understanding-the-bias-variance-tradeoff-165e6942b229
 %   https://degreesofbelief.roryquinn.com/bias-variance-tradeoff
-
+%   https://d2l.ai/chapter_multilayer-perceptrons/underfit-overfit.html
 \subsection*{Ans:}
 
 % - Intro
@@ -198,22 +204,64 @@ How can you tell if an ML model is underfitting and overfitting?
 % - plots
 % - Solutions
 % - Conclusion
-In supervised learning, we have to decide that how expressive our machine learning
-model should be. In other words, we have to decide we want a simple model to express
-limited range of data or we want to have a complex model to express a board range
-of data.
+In supervised learning, we have to decide that how expressive our should be,
+which is either a complex and flexable model to fit a borad range of data or
+a simple and restricted model.
 
-For example,
+Before talking underfitting and overfitting, we should know that the expected prediction
+error can be decomposite into bias, variance, and the irreducible error in the data.
+
+\begin{equation}
+    \mathbb{E}_{y,S}[(y-\hat{f}(x; S))^2] =
+    (f(x) - \mathbb{E}_{S}[\hat{f}(x; S)])^2
+    + \mathrm{Var}_{S}[\hat{f}(x; S)]
+    + \sigma^2
+\end{equation}
+
+for each $x$
+
+where $x$, $y$ are from a distribution $\mathcal{D}$ and $S$ is the sampled training
+data set and it is a subset of $\mathcal{D}$.
+
+The first term is the squared bias of the estimator $\hat{f}$.
+It is the discrepancy between its expected prediction value from estimators by sampled
+training set $S$.
+
+% figures
+\begin{figure}
+    \begin{minipage}{.5\linewidth}
+        \centering
+        \subfloat[]{\label{main:a}\includegraphics[scale=.5]{figs/plt_underfit.jpg}}
+    \end{minipage}%
+    \begin{minipage}{.5\linewidth}
+        \centering
+        \subfloat[]{\label{main:b}\includegraphics[scale=.5]{figs/plt_overfit.jpg}}
+    \end{minipage}\par\medskip
+    \centering
+    \subfloat[The underlying model]{
+        \label{main:c}
+        \includegraphics[scale=.5]{figs/plt_true.png}
+        }
+    \label{fig:main}
+    \caption{Figures from \cite{the-bias-variance-tradeoff}}
+\end{figure}
+
+
+% and the second one is
+% the variance of the estimator.
 
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.8\textwidth]{figs/bias-var-trade.jpg}
-    \caption{Example of a parametric plot ($\sin (x), \cos(x), x$)}
+    \caption{
+        Plot the sq. bias, variance, training error, and test error
+        from \cite{the-bias-variance-tradeoff}
+    }
     \label{fig:bias-vars-tradeoff}
 \end{figure}
 % ---------------------------------------------------------------------
-\medskip
+\pagebreak
 
 \bibliographystyle{unsrt}
 \bibliography{ref}
