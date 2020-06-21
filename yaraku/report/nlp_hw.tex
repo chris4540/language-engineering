@@ -14,7 +14,8 @@
 \usepackage{amsmath}
 \usepackage{mwe}
 \usepackage{subfig}
-\usepackage{color}
+% \usepackage{color}
+\usepackage[usenames,dvipsnames]{color}
 \usepackage{soul}
 % Load varioref first, then hyperref, then cleveref. See section 14.1 of the cleveref manual.
 \usepackage{varioref}
@@ -22,8 +23,9 @@
 \usepackage{cleveref}
 \usepackage{tikz}
 \usepackage{floatrow}
-% Table float box with bottom caption, box width adjusted to content
-\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+\usepackage{listings}
+\usepackage{lstautogobble}
+\usepackage[toc,page]{appendix}
 % -----------------------
 
 % -----------------------
@@ -35,6 +37,30 @@
     cirwhite/.style={draw=gray,circle,fill=white,minimum size=1pt,inner sep=2pt,line width=0.2mm},
     cirred/.style={draw=gray,circle,fill=red,minimum size=1pt,inner sep=2pt,line width=0.2mm},
 }
+% Custom Python Syntax
+\lstset
+{
+    basicstyle=\small\ttfamily,
+    commentstyle=\color{Green},
+    frame=single,
+    language=python,
+    numbers=left,
+    numbersep=10pt,
+    numberstyle=\footnotesize\color{Gray},
+    showstringspaces=false,
+    stringstyle=\color{Mulberry},
+    tabsize=3,
+    % the more interesting/new bits
+    classoffset=1,% starting a new class
+    morekeywords={True},
+    keywordstyle=\color{WildStrawberry},
+    classoffset=2,% starting another class
+    morekeywords={False},
+    keywordstyle=\color{LimeGreen},
+    classoffset=0,% restore to default class if more customisations...
+}
+% Table float box with bottom caption, box width adjusted to content
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
 % -----------------------
 
 
@@ -207,11 +233,24 @@ What is the minimum number of fully connected layers (separated by non-lineariti
 that an ANN must have to compute the XOR function.
 
 \subsection*{Ans:}
-
+% - Bkg
+% - onelayer NN is similar to SVM
+% - XOR is not linear separable by one planna
+% - 2 layers
+% Ref:
+%   https://www.deeplearningbook.org/slides/06_mlp.pdf
+%   https://medium.com/@jayeshbahire/the-xor-problem-in-neural-networks-50006411840b
 The plot and the function table are shown in \cref{tbl:xor_fun} and \cref{fig:xor_fun}
 respectively.
 
+We can see that XOR function is not linear separable. Therefore we need a non-linear
+transform to make it the input space linear separable.
 
+Therefore, we have two fully connected layers and one non-linear activation in between
+the two fully connected layers.
+
+An implementation for the XOR is placed in the appendix.
+The weighting comes from \cite{Goodfellow-deeplearning-book}.
 \begin{figure}[!h]
     \begin{floatrow}
     % left-table
@@ -358,4 +397,9 @@ contribute regularization in training neural networks. \cite{luo2018-bn-regulari
 
 \bibliographystyle{unsrt}
 \bibliography{ref}
+
+\begin{appendices}
+\chapter{Tensorflow implemention of XOR neural networks for question 4b}
+\lstinputlisting{../xor_fun.py}
+\end{appendices}
 \end{document}

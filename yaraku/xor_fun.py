@@ -3,8 +3,8 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from keras.models import Sequential
 
-training_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], "float32")
-target_data = np.array([[0], [1], [1], [0]], "float32")
+inputs = np.array([[0, 0], [0, 1], [1, 0], [1, 1]], "float32")
+outputs = np.array([[0], [1], [1], [0]], "float32")
 
 model = Sequential()
 model.add(Dense(2, input_dim=2, use_bias=True, activation='relu'))
@@ -16,4 +16,4 @@ first_layer.set_weights([np.ones((2, 2)), np.array([0, -1])])
 second_layer = model.layers[1]
 second_layer.set_weights([np.array([[1], [-2]])])
 
-tf.debugging.assert_equal(model.predict(training_data), target_data)
+tf.debugging.assert_equal(model.predict(inputs), target_data)
