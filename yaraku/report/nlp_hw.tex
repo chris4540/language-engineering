@@ -21,7 +21,9 @@
 \usepackage{hyperref}
 \usepackage{cleveref}
 \usepackage{tikz}
-\usepackage{pgfplots,booktabs}
+\usepackage{floatrow}
+% Table float box with bottom caption, box width adjusted to content
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
 % -----------------------
 
 % -----------------------
@@ -205,10 +207,15 @@ What is the minimum number of fully connected layers (separated by non-lineariti
 that an ANN must have to compute the XOR function.
 
 \subsection*{Ans:}
-\begin{figure}[!ht]
-    \centering
-    \begin{minipage}{.4\linewidth}
-        \centering
+
+The plot and the function table are shown in \cref{tbl:xor_fun} and \cref{fig:xor_fun}
+respectively.
+
+
+\begin{figure}[!h]
+    \begin{floatrow}
+    % left-table
+    \capbtabbox{%
         \begin{tabular}{|c|c|c|}
             \hline
             \multicolumn{2}{|c|}{INPUT} & OUTPUT  \\ \hline
@@ -218,9 +225,10 @@ that an ANN must have to compute the XOR function.
             1            & 0            & 1       \\ \hline
             1            & 1            & 0       \\ \hline
         \end{tabular}
-    \end{minipage}
-    \begin{minipage}{.4\linewidth}
-        \centering
+    }{\caption{XOR function table} \label{tbl:xor_fun}}
+
+    % right-figure
+    \ffigbox{%
         \begin{tikzpicture}[x=2mm,y=2mm]
             % ref: https://tex.stackexchange.com/a/140753
             \draw[|->, -latex, draw] (-1,0) -- (15,0); %draw axis
@@ -234,8 +242,8 @@ that an ANN must have to compute the XOR function.
             \node[cirred] at (8,0) {};
             \node[cirwhite] at (8,8) {};
         \end{tikzpicture}
-    \end{minipage}
-    \caption{XOR function input-output table and the plot}
+    }{\caption{XOR function plot} \label{fig:xor_fun}}
+    \end{floatrow}
 \end{figure}
 
 % -----------------------------------------------------------------------------
