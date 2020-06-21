@@ -20,11 +20,21 @@
 \usepackage{varioref}
 \usepackage{hyperref}
 \usepackage{cleveref}
+\usepackage{tikz}
+\usepackage{pgfplots,booktabs}
 % -----------------------
 
+% -----------------------
 % Env
+% -----------------------
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
+\tikzset{
+    cirwhite/.style={draw=gray,circle,fill=white,minimum size=1pt,inner sep=2pt,line width=0.2mm},
+    cirred/.style={draw=gray,circle,fill=red,minimum size=1pt,inner sep=2pt,line width=0.2mm},
+}
+% -----------------------
+
 
 \title{NLP assignment from yaraku}
 % \subtitle{This will be read by all employees}
@@ -194,6 +204,41 @@ Try to find the smallest that can do the job.
 What is the minimum number of fully connected layers (separated by non-linearities)
 that an ANN must have to compute the XOR function.
 
+\subsection*{Ans:}
+\begin{figure}[!ht]
+    \centering
+    \begin{minipage}{.4\linewidth}
+        \centering
+        \begin{tabular}{|c|c|c|}
+            \hline
+            \multicolumn{2}{|c|}{INPUT} & OUTPUT  \\ \hline
+            A            & B            & A XOR B \\ \hline
+            0            & 0            & 0       \\ \hline
+            0            & 1            & 1       \\ \hline
+            1            & 0            & 1       \\ \hline
+            1            & 1            & 0       \\ \hline
+        \end{tabular}
+    \end{minipage}
+    \begin{minipage}{.4\linewidth}
+        \centering
+        \begin{tikzpicture}[x=2mm,y=2mm]
+            % ref: https://tex.stackexchange.com/a/140753
+            \draw[|->, -latex, draw] (-1,0) -- (15,0); %draw axis
+            \draw[|->, -latex, draw] (0,-1) -- (0,15);
+
+            \node[anchor=west] at (15,0) {$x_1$};  % draw axis labels
+            \node[anchor=south] at (0,15) {$x_2$};
+
+            \node[cirwhite] at (0,0) {}; % circles
+            \node[cirred] at (0,8) {};
+            \node[cirred] at (8,0) {};
+            \node[cirwhite] at (8,8) {};
+        \end{tikzpicture}
+    \end{minipage}
+    \caption{XOR function input-output table and the plot}
+\end{figure}
+
+% -----------------------------------------------------------------------------
 \section{Question 5}
 How can you tell if an ML model is underfitting and overfitting?
 % References:
