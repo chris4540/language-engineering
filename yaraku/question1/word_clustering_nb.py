@@ -1,8 +1,19 @@
-# Use vscode interactive and then convert this file to jupyter
-# See also: https://code.visualstudio.com/docs/python/jupyter-support-py#_export-a-jupyter-notebook
+"""
+Use vscode interactive and then convert this file to jupyter
+See also: https://code.visualstudio.com/docs/python/jupyter-support-py#_export-a-jupyter-notebook
 
-# Usage:
-#   $ ipython word_clustering_nb.py
+Usage:
+  $ ipython word_clustering_nb.py
+
+Outline:
+- [x] sampling words
+- [x] load word embeddings
+- [x] tidy up
+- [x] determine how many clusters
+- [x] Do clustering
+- [ ] Display samples from each clusters
+- [ ] Display centers
+"""
 
 # To add a new cell, type '# %%'
 # To add a new markdown cell, type '# %% [markdown]'
@@ -170,10 +181,10 @@ emb_vecs = glove.get_emb_vecs_of(sampled_words)
 
 
 # %%
-#
 # build the data-matrix with shape: (n_samples, emb_dims)
 X = np.array([emb_vecs[w] for w in sampled_words])
-# normalize it
+# L2-normalize all the vectors as we would like to use the metric: cosine distance
+# See also: https://stats.stackexchange.com/a/146279
 length = np.sqrt((X**2).sum(axis=1))[:, None]
 X = X / length
 
@@ -182,7 +193,7 @@ X = X / length
 # ## Selecting the number of clusters
 # Consider the **elbow method** and the **silhouette method** to have determine the number of clusters.
 # Given the fact that the more clusters we have, the easier to assign the "concept" to each cluster.
-# However, we would like to visualize the results and therefore we search the number of clusters from 2 to 20
+# However, we would like to visualize the results and therefore we search the number of clusters from 3 to 25
 
 
 # %%
@@ -197,7 +208,7 @@ if k_mean_stat.exists():
     list_k = df_data["n_clusters"]
     print(f"Loaded the {k_mean_stat}")
 else:
-    list_k = list(range(2, 20+1))
+    list_k = list(range(3, 25+1))
     # formulate the data and save it
     df_data = {
         "n_clusters": [],   # Number of clusters
@@ -213,7 +224,7 @@ else:
         time_used = time.time() - stime
         print(f"n_clusters: {k}; "
               f"inertia: {km.inertia_:.3f}; "
-              f"silhouette_avg: {silhouette_avg:.3f}; "
+              f"mean_sil_coeff: {silhouette_avg:.3f}; "
               f"time_used: {time_used:.2f}")
         df_data["n_clusters"].append(k)
         df_data["wss"].append(float(km.inertia_))
@@ -227,7 +238,6 @@ else:
 # %%
 df = pd.DataFrame.from_dict(df_data)
 df = df.reset_index()
-print(df)
 
 # %% [markdown]
 # Elbow Method
@@ -244,16 +254,16 @@ print(df)
 
 
 # %%
-# Plot the line plot
-plt.subplots(figsize=plt_cfg.figsize)
-ax = sns.lineplot(x="n_clusters",
-                  y="wss", data=df)
-plt.xticks(np.arange(min(list_k), max(list_k)+1, 1))
-ax.set(xlabel="Number of clusters",
-       ylabel="Within-Cluster-Sum of Squared Errors")
+# # Plot the line plot
+# plt.subplots(figsize=plt_cfg.figsize)
+# ax = sns.lineplot(x="n_clusters",
+#                   y="wss", data=df)
+# plt.xticks(np.arange(min(list_k), max(list_k)+1, 1))
+# ax.set(xlabel="Number of clusters",
+#        ylabel="Within-Cluster-Sum of Squared Errors")
+# plt.tight_layout()
+# plt.savefig("results/n_clusters_against_wss.png")
 # plt.show()
-plt.tight_layout()
-plt.savefig("n_clusters_against_wss.png")
 
 # %%
 kneedle = KneeLocator(df["n_clusters"], df["wss"],
@@ -261,19 +271,21 @@ kneedle = KneeLocator(df["n_clusters"], df["wss"],
 print("The number of cluster according to elbow method:" , kneedle.knee)
 print("The corresponding Within-Cluster-Sum of Squared Errors (WSS):", kneedle.knee_y)
 
-
-sys.exit(0)
 # %%
+# Plot knee
 kneedle.plot_knee(figsize=plt_cfg.figsize)
 plt.xlabel("Number of clusters")
 plt.ylabel("Within-Cluster-Sum of Squared Errors")
-x = list_k
-plt.xticks(np.arange(min(x), max(x)+1, 1))
+plt.xticks(np.arange(min(list_k), max(list_k)+1, 1))
+plt.tight_layout()
+plt.savefig("results/knee.png")
 plt.show()
 
 
 # %%
 kneedle.plot_knee_normalized(figsize=plt_cfg.figsize)
+plt.tight_layout()
+plt.savefig("results/knee_normalized.png")
 plt.show()
 
 
@@ -283,18 +295,23 @@ plt.show()
 # The silhouette value measures how similar a point is to its own cluster (cohesion) compared to other clusters (separation).
 
 # %%
-figsize = (18, 7)
 plt.subplots(figsize=plt_cfg.figsize)
-ax = sns.lineplot(x="Number of clusters",
-                  y="Mean Silhouette Coefficient", data=df)
-x = list_k
-plt.xticks(np.arange(min(x), max(x)+1, 1))
+ax = sns.lineplot(x="n_clusters",
+                  y="mean_sil_coeff", data=df)
+ax.set(xlabel="Number of clusters",
+       ylabel="Mean Silhouette Coefficient")
+plt.xticks(np.arange(min(list_k), max(list_k)+1, 1))
+plt.tight_layout()
+plt.savefig("results/n_clusters_against_silhouette_score.png")
 plt.show()
 
 # %% [markdown]
-# The Silhouette Method suggests number of clusters to be 2
+# The Silhouette Method suggests number of clusters to be 7
+# Combine two information, I would show the clustering with n_clusters = 7
+
 
 # %%
+
 n_clusters = 7
 km = get_kmean_model(n_clusters)
 labels = km.fit_predict(X)
