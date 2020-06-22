@@ -1,4 +1,3 @@
-
 \documentclass{kthreport}
 % default language is English, but you can use Swedish definitions like this:
 % \documentclass[swedish]{kthreport}
@@ -98,19 +97,19 @@ arbitrary lengths.
 % https://towardsdatascience.com/document-embedding-techniques-fed3e7a6a25d#a7aa
 \subsection*{Ans:}
 
-Let's consider a multi-word phrase, a sentence or a paragraph to be a document.
+Let us consider a multi-word phrase, a sentence or a paragraph to be a document.
 
 \textbf{Latent Dirichlet Allocation}
 
-This method cluseter documents into K "topics" which means the document should
-be related to certain topic or theme.
+This method clusters documents into K "topics", which means a document should
+follow or be related to a topic.
 
-This is a Bayesian network. The idea is considering a hidden random
-varaible called "topic" and each topic has a bag-of-words which follows
-dirichlet distribution.
+This is a Bayesian network. The idea is to consider a hidden random variable
+called "topic" and each topic has a bag-of-words model following
+Dirichlet distribution.
 
-The bayesian network can be estimated by maximize the Evidence Lower Bound (ELBO)
-through the variational EM algorithm or estimated by Gibbs sampling method.
+The Bayesian network can be estimated by maximizing the Evidence Lower Bound
+(ELBO) through the variational EM algorithm or by Gibbs sampling method.
 
 Scikit-learn has a good introduction to
 \href{https://scikit-learn.org/stable/modules/decomposition.html#latentdirichletallocation}{the LDA method.}
@@ -118,13 +117,13 @@ Scikit-learn has a good introduction to
 % -----------------------------------------------------------------------
 \textbf{tf-idf}
 
-In information retrival, tf-idf is a useful technique to represent a document by
-"terms". Each unqiue word is a dimension of the tf-idf vector space. Notes that
-tf-idf is a bag-of-words representation approach.
+In information retrieval, tf-idf is a useful technique to represent a document by
+words. Each unique word is a dimension of the tf-idf vector space.
+Notice that tf-idf is a bag-of-words representation approach.
 
-However, the space containing tf-idf vectors are very large and suffering from
+However, the tf-idf vectors are sparse and very high-dimensional. It will suffer from
 the curse of dimensionality. Usually we would employ the following steps to
-reduce the dimensionality.
+reduce dimensionality.
 
 \begin{itemize}
     \item Remove stop words (a, the, does, has etc.)
@@ -134,19 +133,17 @@ reduce the dimensionality.
     \item replace numbers, web, and email etc. to tokens (numbers becomes \texttt{<number>} etc.)
 \end{itemize}
 
-With the tf-idf vector, we can check the similarity between document
-using cosine distance (similarity) and/or Euclidean distance and so-on.
-
-We can consider tf-idf as a representation of a document in vector space and then
-we can do clusetering as what we did in the previous exercise.
+At this point, we can consider tf-idf as a representation of a document in vector space.
+However, we can further reduce dimensionality by singular value decomposition
+or latent semantic analysis to solve the problem that the term-document matrix
+is too sparse due to synonymy.
 
 \textbf{Averaging word embeddings}
 
-It averages the embedding vectors of words in the document and I would consider
-it as a naïve method to represent a document in vector space.
+By averaging the word vectors of the word appeared in the document, we obtain a vector
+representation. Then, we can cluster the vectors as what we did in Question 1.
 
 % ---------------------------------------------------------------------------
-
 \subsection{Question 2b (Optional)}
 Describe how you might cluster words from different languages
 
@@ -158,18 +155,18 @@ Describe how you might cluster words from different languages
 % tokenization
 % Mention some tricky stuff
 
-I would suggest to use the skip-gram model \cite{mikolov2013distributed}
+We would suggest to use the skip-gram model \cite{mikolov2013distributed}
 to learn the vector representation of words and then for clustering.
 
 First we need to have a text corpus of the target language.
 
-Second, we need to tokenize our corpus. I would recommend to use
+Second, we need to tokenize our corpus. We would recommend to use
 \href{https://taku910.github.io/mecab/}{MeCab} (for Japanese)
 or \href{https://stanfordnlp.github.io/stanza/}{Stanza} (for other language)
 to create tokens from sentences.
 
 Third, we need to choose hyperparameters like context window size and vector dimension.
-If we have appropriate evaluation tasks, we could do cross validation to find
+If we have appropriate evaluation tasks, we could do cross-validation to find
 a set of hyperparameters.
 
 Although we have the context-target word pairs to train the skip-gram model, we
@@ -178,7 +175,7 @@ could introduce negative sampling to speed up the learning process. \cite{mikolo
 % -----------------------------------------------------------------
 \section{Question 3}
 The earliest deep-learning attention mechanism was the method proposed by Bahdanau
-in a paper on sequence to sequence models.
+in a paper on sequence-to-sequence models.
 
 Name some other variants of attention mechanisms (other than Bahdanau's method).
 
@@ -188,18 +185,21 @@ Name some other variants of attention mechanisms (other than Bahdanau's method).
 
 
 Bahdanau purposed the attention model which is to solve the bottleneck of using
-fixed-length vector in the basic encoder-decoder architecture. It is obvious to understand
+a fixed-length vector in the basic encoder-decoder architecture. It is obvious to understand
 that encoding a long sentence into a fixed-length context vector (representation)
 will lose the information like position information (i.e. How the word orders in the sentence)
 and alignment between source and target sentences.
 
 \textbf{Luong mechanism}
 
-In this paper \cite{luong-etal-2015-effective}, they purposed 3 other method to calculate the alignment weightings
-and make modifcation to the Bahdanau's method. The modifcations are
+In this paper \cite{luong-etal-2015-effective},
+they purposed 3 other methods to calculate the alignment weightings
+and make modifications to Bahdanau's method.
+
+The modifications are:
 \begin{itemize}
-    \item use the hidden state at the top LSTM or RNN-based network rs in both the encoder and decoder
-    \item use the current decoder state to compute the alignment weightings
+    \item using the hidden state at the top LSTM or RNN-based network rs in both the encoder and decoder
+    \item using the current decoder state to compute the alignment weightings
 \end{itemize}
 
 Also, Luong et al work \cite{luong-etal-2015-effective} purposed global and local attentions.
@@ -207,7 +207,7 @@ Also, Luong et al work \cite{luong-etal-2015-effective} purposed global and loca
 \textbf{Self Attention}
 
 Self-attention was purposed by Cheng et. al. \cite{cheng-etal-2016-long}. It is
-original to create a facility to give the RNN-famaily models stronger memorization
+original to create a facility to give the RNN-family models stronger memorization
 capability and the ability to discover relations among tokens.
 
 \textbf{Scaled Dot-Product and Multi-Head Self Attention}
@@ -236,7 +236,7 @@ The network has only 3 parameters and they all are ones.
 
 Each time, I feed the digit one-by-one to the network and obtain the answer at the end.
 
-The input and output layer are identity transform.
+The input and output layers are identity transform.
 Also, the activation of the recurrent unit should be linear or ReLU in order to hold
 this property.
 
@@ -259,7 +259,7 @@ that an ANN must have to compute the XOR function.
 The plot and the function table are shown in \cref{tbl:xor_fun} and \cref{fig:xor_fun}
 respectively.
 
-We can see that XOR function is not linear separable. Therefore we need a non-linear
+We can see that the XOR function is not linear separable. Therefore we need a non-linear
 transform to make it the input space linear separable.
 
 Therefore, we have two fully connected layers and one non-linear activation in between
@@ -267,7 +267,7 @@ the two fully connected layers.
 
 An implementation for the XOR is placed in the appendix.
 The weighting comes from \cite{Goodfellow-deeplearning-book}.
-\begin{figure}[!h]
+\begin{figure}[!ht]
     \begin{floatrow}
     % left-table
     \capbtabbox{%
@@ -317,11 +317,11 @@ How can you tell if an ML model is underfitting and overfitting?
 % - Solutions
 % - Conclusion
 In supervised learning, we have to decide that how expressive our should be,
-which is either a complex and flexible model to fit a borad range of data or
+which is either a complex and flexible model to fit a broad range of data or
 a simple and restricted model.
 
-Before talking underfitting and overfitting, we should know that the expected prediction
-error can be decomposite into bias, variance, and the irreducible error in the data.
+Before talking underfitting and overfitting, we should know that the expected prediction error
+can be decomposed into bias, variance, and the irreducible error of the data.
 
 \begin{equation}
     \mathbb{E}_{y,S}[(y-\hat{f}(x; S))^2] =
@@ -337,8 +337,8 @@ data set and it is a subset of $\mathcal{D}$, and $\sigma$ is the irreducible er
 
 The first term is the squared bias of the estimator $\hat{f}$.
 It is the discrepancy between its expected prediction value and the true value.
-Notes that the expectation is taken over $S$ which means we treat the training sample
-set as a random varaible.
+Notice that the expectation is taken over $S$ which means we treat the training sample
+set as a random variable.
 
 \begin{align}
     \mathrm{Var}_{S}[\hat{f}(x; S)]
@@ -352,7 +352,7 @@ the expected divergence of the estimated prediction function from its average va
 If we have a simple and inflexible learning model, we will have
 a \emph{\hl{high bias and low variance}} model and we \emph{\hl{underfit}} the data.
 A horizontal line with one tunable parameter or N-nearest neighbor
-where N is the number of all data are the examples of inflexible models.
+,where N is the number of all data, are the examples of inflexible models.
 An example plot is shown in \cref{fig:underfit}.
 
 On the order hand if we have a flexible learning model,
@@ -361,20 +361,20 @@ It means the trained model is not generalize to the out-of-sample data. A high
 degree polynomial regression, 1--nearest neighbor and non-parametric method are the
 examples of flexible learning models.
 
-In \cref{fig:bias-vars-tradeoff}, the model flexibity with lowest out-of-sample
-error indicates the optimial point which balances the bias and the variance.
-In practices, we select a model which balances the bias and the variance through
-tracking the error on validation set (or called as development set).
+In \cref{fig:bias-vars-tradeoff}, the model flexibility with the lowest out-of-sample error
+indicates the optimal point which balances the bias and the variance.
+in practice, we select a model which balances the bias and the variance through
+tracking the error on the validation set (or it is called development set).
 
 Regularization methods helps improving the generalizability of a learned model.
 
-In deep learning context, drop-out, L2 regularization over weightings, early-stopping,
+In the context of deep learning, drop-out, L2 regularization over weightings, early-stopping,
 data augmentation as well as batch-normalization
 contribute regularization in training neural networks. \cite{luo2018-bn-regularization}
 
 
 % figures
-\begin{figure}[!h]
+\begin{figure}[!ht]
     \begin{minipage}{.5\linewidth}
         \centering
         \subfloat[An underfitting model]{
@@ -398,7 +398,7 @@ contribute regularization in training neural networks. \cite{luo2018-bn-regulari
 \end{figure}
 
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
     \centering
     \includegraphics[width=0.8\textwidth]{figs/bias-var-trade.jpg}
     \caption{
