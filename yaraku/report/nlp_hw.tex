@@ -129,9 +129,8 @@ reduce the dimensionality.
 \begin{itemize}
     \item Remove stop words (a, the, does, has etc.)
     \item Case folding (to lower case)
+    \item Lemmatization (map words to their canonical form)
     \item Remove diacritics (e.g. ö -> o, ä -> a)
-    \item Text normalization (map words to their canonical form)
-    \item lemmatization
     \item replace numbers, web, and email etc. to tokens (numbers becomes \texttt{<number>} etc.)
 \end{itemize}
 
@@ -142,7 +141,9 @@ We can consider tf-idf as a representation of a document in vector space and the
 we can do clusetering as what we did in the previous exercise.
 
 \textbf{Averaging word embeddings}
-It averages the embedding vectors of words in the document.
+
+It averages the embedding vectors of words in the document and I would consider
+it as a naïve method to represent a document in vector space.
 
 % ---------------------------------------------------------------------------
 
@@ -150,9 +151,15 @@ It averages the embedding vectors of words in the document.
 Describe how you might cluster words from different languages
 
 \subsection{Ans:}
+
+% Skip gram :
+% See also: word2vec: CBOW & skip-gram performance wrt training dataset size
+%   https://stackoverflow.com/a/40507093/8654623
+% tokenization
+% Mention some tricky stuff
+
 I would suggest to use the skip-gram model \cite{mikolov2013distributed}
 to learn the vector representation of words and then for clustering.
-Take Japanese as the target language.
 
 First we need to have a text corpus of the target language.
 
@@ -167,13 +174,6 @@ a set of hyperparameters.
 
 Although we have the context-target word pairs to train the skip-gram model, we
 could introduce negative sampling to speed up the learning process. \cite{mikolov2013distributed}
-
-
-% Skip gram :
-% See also: word2vec: CBOW & skip-gram performance wrt training dataset size
-%   https://stackoverflow.com/a/40507093/8654623
-% tokenization
-% Mention some tricky stuff
 
 % -----------------------------------------------------------------
 \section{Question 3}
