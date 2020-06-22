@@ -15,7 +15,8 @@
 \usepackage{mwe}
 \usepackage{subfig}
 % \usepackage{color}
-\usepackage[usenames,dvipsnames]{color}
+% \usepackage[usenames,dvipsnames]{color}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{soul}
 % Load varioref first, then hyperref, then cleveref. See section 14.1 of the cleveref manual.
 \usepackage{varioref}
@@ -224,11 +225,26 @@ learnable subspaces for keys, values and queries inputs of each layer.
 % 1. lilianweng.github.io/lil-log/2018/06/24/attention-attention.html#summary
 
 \section{Question 4}
+Try to find the smallest that can do the job.
+
 \subsection{Question 4a}
 Come up with an architecture for an ANN that would suffice to add up the digits of a 4-digit number.
 
+\subsection*{Ans:}
+A simple recurrent neural network would suffice to add up the digits of a 4-digit number.
+The network has only 3 parameters and they all are ones.
+
+Each time, I feed the digit one-by-one to the network and obtain the answer at the end.
+
+The input and output layer are identity transform.
+Also, the activation of the recurrent unit should be linear or ReLU in order to hold
+this property.
+
+The hidden state acts like a placeholder to store the partially sum.
+
+An implementation for this question is placed in the appendix.
+
 \subsection{Question 4b}
-Try to find the smallest that can do the job.
 What is the minimum number of fully connected layers (separated by non-linearities)
 that an ANN must have to compute the XOR function.
 
@@ -397,9 +413,12 @@ contribute regularization in training neural networks. \cite{luo2018-bn-regulari
 
 \bibliographystyle{unsrt}
 \bibliography{ref}
-
-\begin{appendices}
-\chapter{Tensorflow implemention of XOR neural networks for question 4b}
+\pagebreak
+\appendix
+\section{Appendix}
+\subsection*{Question 4a: Simple implemention for adding up digits}
+\lstinputlisting{../rnn_add_digits.py}
+\subsection*{Question 4b: Tensorflow implemention of XOR neural networks}
 \lstinputlisting{../xor_fun.py}
-\end{appendices}
+
 \end{document}
