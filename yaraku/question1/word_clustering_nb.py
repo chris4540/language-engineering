@@ -13,6 +13,7 @@ Outline:
 - [x] Do clustering
 - [x] Display samples from each clusters
 - [x] Display centers
+- [x] Visualization
 """
 
 # To add a new cell, type '# %%'
@@ -158,7 +159,7 @@ def get_kmean_model(n_clusters: int):
 
 class PlotConfig:
     """
-    Plotting related configuration
+    Plot related configuration
     """
     figsize = (18, 7)
 
@@ -205,13 +206,13 @@ X = X / length
 k_mean_stat = Path("results/kmean_cluster_err_stat.json")
 if k_mean_stat.exists():
     with k_mean_stat.open("r") as f:
-        df_data = json.load(f)
-    list_k = df_data["n_clusters"]
+        km_stat_dict = json.load(f)
+    list_k = km_stat_dict["n_clusters"]
     print(f"Loaded the {k_mean_stat}")
 else:
     list_k = list(range(3, 15+1))
     # formulate the data and save it
-    df_data = {
+    km_stat_dict = {
         "n_clusters": [],   # Number of clusters
         "wss": [],  # Within-Cluster-Sum of Squared Errors
         "mean_sil_coeff": [],  # Mean Silhouette Coefficient
@@ -227,53 +228,45 @@ else:
               f"inertia: {km.inertia_:.3f}; "
               f"mean_sil_coeff: {silhouette_avg:.3f}; "
               f"time_used: {time_used:.2f}")
-        df_data["n_clusters"].append(k)
-        df_data["wss"].append(float(km.inertia_))
-        df_data["mean_sil_coeff"].append(float(silhouette_avg))
-        df_data["time_used"].append(time_used)
+        km_stat_dict["n_clusters"].append(k)
+        km_stat_dict["wss"].append(float(km.inertia_))
+        km_stat_dict["mean_sil_coeff"].append(float(silhouette_avg))
+        km_stat_dict["time_used"].append(time_used)
 
-    # formulate the data and save it
+    # formulate the data and save it as cache
+    print(f"Saving the statistics to {k_mean_stat}")
     with k_mean_stat.open("w") as f:
-        json.dump(df_data, f, indent=1)
+        json.dump(km_stat_dict, f, indent=1)
 
 # %%
-df = pd.DataFrame.from_dict(df_data)
-df = df.reset_index()
+km_stat = pd.DataFrame.from_dict(km_stat_dict)
+km_stat = km_stat.reset_index()
 
 # %% [markdown]
-# Elbow Method
+# ### Elbow Method
 # Generally speaking, the within cluster SSE decreases as the number of clusters \
 # increase. We would like to find the plot of the point of inflection on the curve.
 # Geometrically, we would like to find the point at which the curvature of the curve is
 # maximum.
+#
 # A two-dimensional curve of a 1-d function:
 #   $g(x,y) = f(x) - y = 0$
+#
 # The curvature is:
 #   $\kappa = \frac{f''}{(1+{f'}^{2})^{3/2}}$
+#
 # See the knee definition in:
-# https://raghavan.usc.edu//papers/kneedle-simplex11.pdf
+#   https://raghavan.usc.edu//papers/kneedle-simplex11.pdf
 
 
 # %%
-# # Plot the line plot
-# plt.subplots(figsize=plt_cfg.figsize)
-# ax = sns.lineplot(x="n_clusters",
-#                   y="wss", data=df)
-# plt.xticks(np.arange(min(list_k), max(list_k)+1, 1))
-# ax.set(xlabel="Number of clusters",
-#        ylabel="Within-Cluster-Sum of Squared Errors")
-# plt.tight_layout()
-# plt.savefig("results/n_clusters_against_wss.png")
-# plt.show()
-
-# %%
-kneedle = KneeLocator(df["n_clusters"], df["wss"],
+kneedle = KneeLocator(km_stat["n_clusters"], km_stat["wss"],
                       S=1.0, curve='convex', direction='decreasing', online=False, interp_method="interp1d")
 print("The number of cluster according to elbow method:", kneedle.knee)
 print("The corresponding Within-Cluster-Sum of Squared Errors (WSS):", kneedle.knee_y)
 
 # %%
-# Plot knee
+# Plot Number of clusters against Within-Cluster-Sum of Squared Errors
 kneedle.plot_knee(figsize=plt_cfg.figsize)
 plt.xlabel("Number of clusters")
 plt.ylabel("Within-Cluster-Sum of Squared Errors")
@@ -284,7 +277,7 @@ plt.show()
 
 
 # %%
-# Plot normalized knee
+# Plot the normalized knee curves
 kneedle.plot_knee_normalized(figsize=plt_cfg.figsize)
 plt.tight_layout()
 plt.savefig("results/knee_normalized.png")
@@ -299,7 +292,7 @@ plt.show()
 # %%
 plt.subplots(figsize=plt_cfg.figsize)
 ax = sns.lineplot(x="n_clusters",
-                  y="mean_sil_coeff", data=df)
+                  y="mean_sil_coeff", data=km_stat)
 ax.set(xlabel="Number of clusters",
        ylabel="Mean Silhouette Coefficient")
 plt.xticks(np.arange(min(list_k), max(list_k)+1, 1))
@@ -308,9 +301,11 @@ plt.savefig("results/n_clusters_against_silhouette_score.png")
 plt.show()
 
 # %% [markdown]
-# The Silhouette Method suggests number of clusters to be 7
-# Combine two information, I would show the clustering with n_clusters = 7
-
+# The Elbow Method do not have a clear suggestion as the change of slope is not obvious.
+#
+# The Silhouette Method suggests number of clusters to be 3, 4, or 5.
+#
+# Combine two information, I would show the clustering with n_clusters = 5
 
 # %%
 # ----------------------
