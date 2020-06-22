@@ -12,7 +12,7 @@ Outline:
 - [x] determine how many clusters
 - [x] Do clustering
 - [x] Display samples from each clusters
-- [ ] Display centers
+- [x] Display centers
 """
 
 # To add a new cell, type '# %%'
@@ -29,6 +29,7 @@ import numpy as np
 from kneed import KneeLocator
 import time
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 import seaborn as sns
 import pandas as pd
 from typing import List, Dict, Iterable
@@ -208,7 +209,7 @@ if k_mean_stat.exists():
     list_k = df_data["n_clusters"]
     print(f"Loaded the {k_mean_stat}")
 else:
-    list_k = list(range(3, 25+1))
+    list_k = list(range(3, 15+1))
     # formulate the data and save it
     df_data = {
         "n_clusters": [],   # Number of clusters
@@ -268,7 +269,7 @@ df = df.reset_index()
 # %%
 kneedle = KneeLocator(df["n_clusters"], df["wss"],
                       S=1.0, curve='convex', direction='decreasing', online=False, interp_method="interp1d")
-print("The number of cluster according to elbow method:" , kneedle.knee)
+print("The number of cluster according to elbow method:", kneedle.knee)
 print("The corresponding Within-Cluster-Sum of Squared Errors (WSS):", kneedle.knee_y)
 
 # %%
@@ -315,19 +316,19 @@ plt.show()
 # ----------------------
 # Do clustering
 # ----------------------
-n_clusters = 7
+n_clusters = 5
 km = get_kmean_model(n_clusters)
 labels = km.fit_predict(X)
 
 # %%
 # build a dataframe which has word and labels
-word_df = pd.DataFrame({
+data = pd.DataFrame({
     "word": sampled_words,
     "label": labels
 })
 # samples words from each cluster
-sampled_word_df = (word_df.sample(frac=1)   # shuffle
-                          .groupby("label", sort=False).head(10))
+sampled_word_df = (data.sample(frac=1, random_state=0)   # shuffle
+                       .groupby("label", sort=False).head(10))
 
 for i in range(n_clusters):
     words = sampled_word_df[sampled_word_df["label"] == i]["word"].to_list()
@@ -351,31 +352,29 @@ pca_result = pca.fit_transform(X)
 
 
 # %%
-# make pca_data for viualization
-data = pd.DataFrame({"labels": labels})
-data["x"] = pca_result[:, 0]
-data["y"] = pca_result[:, 1]
-data
+# add pca_data for viualization
+data["pca_x"] = pca_result[:, 0]
+data["pca_y"] = pca_result[:, 1]
 
 
 # %%
-def plot_scatter(df, label_to_txt):
+def plot_scatter(df: pd.DataFrame, x_col: str, y_col: str, label_to_txt: dict) -> Axes:
     """
     Helper function the plot the scatter plot
     """
-    n_clusters = df["labels"].unique()
+    n_clusters = len(df["label"].unique())
     fig, ax = plt.subplots(figsize=(16, 10))
 
     scatter_palette = sns.color_palette("hls", n_clusters)
     txt_palette = sns.color_palette("hls", n_clusters, desat=0.6)
     for i in range(n_clusters):
         plt.scatter(
-            x=df.loc[df['labels'] == i, 'x'],
-            y=df.loc[df['labels'] == i, 'y'],
+            x=df.loc[df['label'] == i, x_col],
+            y=df.loc[df['label'] == i, y_col],
             color=scatter_palette[i],
             alpha=0.1)
         # find the location of the text
-        xtext, ytext = df.loc[df['labels'] == i, ['x', 'y']].mean()
+        xtext, ytext = df.loc[df['label'] == i, [x_col, y_col]].mean()
         # set up the box around the text
         bbox_props = dict(boxstyle="round,pad=0.3",
                           fc=txt_palette[i], alpha=0.8, lw=1)
@@ -387,43 +386,28 @@ def plot_scatter(df, label_to_txt):
 
 
 # %%
-data["labels"].unique()
-
-
-# %%
-fig, ax = plt.subplots(figsize=(16, 10))
-scatter_palette = sns.color_palette("hls", n_clusters)
-txt_palette = sns.color_palette("hls", n_clusters, desat=0.6)
-for i in range(n_clusters):
-    plt.scatter(
-        x=data.loc[data['labels'] == i, 'x'],
-        y=data.loc[data['labels'] == i, 'y'],
-        color=scatter_palette[i],
-        alpha=0.1)
-    xtext, ytext = data.loc[data['labels'] == i, ['x', 'y']].mean()
-    bbox_props = dict(boxstyle="round,pad=0.3",
-                      fc=txt_palette[i], alpha=0.8, lw=1)
-    plt.annotate(label_to_word[i], (xtext, ytext),
-                 horizontalalignment='center',
-                 verticalalignment='center',
-                 size=15, color='k', bbox=bbox_props, alpha=0.8)
+plot_scatter(data, "pca_x", "pca_y", label_to_word)
+plt.title(f'Visualize k-means clustering by PCA with {n_clusters} clusters')
+plt.tight_layout()
+plt.savefig("results/pca_visual.png")
 plt.show()
 
 
 # %%
 time_start = time.time()
-tsne = TSNE(n_components=2, verbose=1, perplexity=400, n_iter=300)
-tsne_results = tsne.fit_transform(X)
+# More info on how to grab the perplexity and iterations:
+#
+tsne = TSNE(n_components=2, verbose=1, perplexity=20, n_iter=500)
+tsne_result = tsne.fit_transform(X)
 print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
 
 
 # %%
-plt.figure(figsize=(16, 10))
-sns.scatterplot(
-    x=tsne_results[:, 0], y=tsne_results[:, 1],
-    hue=labels,
-    palette=sns.color_palette("hls", n_clusters),
-    legend="full",
-    alpha=0.3
-)
+data["tsne_x"] = tsne_result[:, 0]
+data["tsne_y"] = tsne_result[:, 1]
 
+plot_scatter(data, "tsne_x", "tsne_y", label_to_word)
+plt.title(f'Visualize k-means clustering by T-SNE with {n_clusters} clusters')
+plt.tight_layout()
+plt.savefig("results/tsne_visual.png")
+plt.show()
