@@ -11,7 +11,7 @@ Outline:
 - [x] tidy up
 - [x] determine how many clusters
 - [x] Do clustering
-- [ ] Display samples from each clusters
+- [x] Display samples from each clusters
 - [ ] Display centers
 """
 
@@ -283,6 +283,7 @@ plt.show()
 
 
 # %%
+# Plot normalized knee
 kneedle.plot_knee_normalized(figsize=plt_cfg.figsize)
 plt.tight_layout()
 plt.savefig("results/knee_normalized.png")
@@ -311,21 +312,39 @@ plt.show()
 
 
 # %%
-
+# ----------------------
+# Do clustering
+# ----------------------
 n_clusters = 7
 km = get_kmean_model(n_clusters)
 labels = km.fit_predict(X)
 
+# %%
+# build a dataframe which has word and labels
+word_df = pd.DataFrame({
+    "word": sampled_words,
+    "label": labels
+})
+# samples words from each cluster
+sampled_word_df = (word_df.sample(frac=1)   # shuffle
+                          .groupby("label", sort=False).head(10))
+
+for i in range(n_clusters):
+    words = sampled_word_df[sampled_word_df["label"] == i]["word"].to_list()
+    print(i, ":", ", ".join(words))
 
 # %%
+# find the cluster centers and 5 words around each center
 label_to_word = dict()
 for i, v in enumerate(km.cluster_centers_):
     nearests = glove.find_nearest_by_vec(v)
-    print("nearest word and distance: ", nearests)
+    print("nearest words and distances: ", nearests)
+    # save down the cluster center to word
+    # use it as the label when plotting out the data
     word = nearests[0][0]
     label_to_word[i] = word
 
-
+# --------------------------------------------------------
 # %%
 pca = PCA(n_components=2)
 pca_result = pca.fit_transform(X)
@@ -408,11 +427,3 @@ sns.scatterplot(
     alpha=0.3
 )
 
-
-# %%
-
-# %%
-df = pd.DataFrame.from_dict(silhouette_scores, orient="index", columns=[
-                            "Mean Silhouette Coefficient"])
-df.index.name = "Number of clusters"
-df = df.reset_index()
