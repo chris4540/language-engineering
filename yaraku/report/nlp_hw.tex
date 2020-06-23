@@ -105,7 +105,7 @@ This method clusters documents into K "topics", which means a document should
 follow or be related to a topic.
 
 This is a Bayesian network. The idea is to consider a hidden random variable
-called "topic" and each topic has a bag-of-words model following
+called "topic" and each topic has a bag-of-words model following the
 Dirichlet distribution.
 
 The Bayesian network can be estimated by maximizing the Evidence Lower Bound
@@ -115,15 +115,15 @@ Scikit-learn has a good introduction to
 \href{https://scikit-learn.org/stable/modules/decomposition.html#latentdirichletallocation}{the LDA method.}
 
 % -----------------------------------------------------------------------
-\textbf{tf-idf}
+\textbf{word-document matrix}
 
-In information retrieval, tf-idf is a useful technique to represent a document by
-words. Each unique word is a dimension of the tf-idf vector space.
-Notice that tf-idf is a bag-of-words representation approach.
+In information retrieval, a word-document matrix is used
+to represent documents by the occurrences of words in those documents.
+Each unique word is a dimension of the vector representation.
 
-However, the tf-idf vectors are sparse and very high-dimensional. It will suffer from
-the curse of dimensionality. Usually we would employ the following steps to
-reduce dimensionality.
+However, the word-document vectors are sparse and very high-dimensional and thus
+it suffers from the curse of dimensionality.
+Usually, we would employ the following steps to reduce dimensionality.
 
 \begin{itemize}
     \item Remove stop words (a, the, does, has etc.)
@@ -133,15 +133,15 @@ reduce dimensionality.
     \item replace numbers, web, and email etc. to tokens (numbers becomes \texttt{<number>} etc.)
 \end{itemize}
 
-At this point, we can consider tf-idf as a representation of a document in vector space.
+At this point, we can consider a term-document vector as the representation of a document.
 However, we can further reduce dimensionality by singular value decomposition
 or latent semantic analysis to solve the problem that the term-document matrix
-is too sparse due to synonymy.
+is sparse due to synonymy.
 
 \textbf{Averaging word embeddings}
 
-By averaging the word vectors of the word appeared in the document, we obtain a vector
-representation. Then, we can cluster the vectors as what we did in Question 1.
+By averaging the vectors of words that appear in a document, we obtain a vector
+representation for that document. Then, we can cluster the vectors as we did in Question 1.
 
 % ---------------------------------------------------------------------------
 \subsection{Question 2b (Optional)}
@@ -155,17 +155,17 @@ Describe how you might cluster words from different languages
 % tokenization
 % Mention some tricky stuff
 
-We would suggest to use the skip-gram model \cite{mikolov2013distributed}
+We would suggest using the skip-gram model \cite{mikolov2013distributed}
 to learn the vector representation of words and then for clustering.
 
-First we need to have a text corpus of the target language.
+First, we need to have a text corpus of the target language.
 
-Second, we need to tokenize our corpus. We would recommend to use
+Second, we need to tokenize our corpus. We would recommend using
 \href{https://taku910.github.io/mecab/}{MeCab} (for Japanese)
 or \href{https://stanfordnlp.github.io/stanza/}{Stanza} (for other language)
 to create tokens from sentences.
 
-Third, we need to choose hyperparameters like context window size and vector dimension.
+Third, we need to choose hyperparameters like the context window size and the vector dimension.
 If we have appropriate evaluation tasks, we could do cross-validation to find
 a set of hyperparameters.
 
@@ -202,7 +202,7 @@ The modifications are:
     \item using the current decoder state to compute the alignment weightings
 \end{itemize}
 
-Also, Luong et al work \cite{luong-etal-2015-effective} purposed global and local attentions.
+Also, Luong et al. \cite{luong-etal-2015-effective} purposed global and local attention.
 
 \textbf{Self Attention}
 
@@ -214,7 +214,7 @@ capability and the ability to discover relations among tokens.
 
 It is the core component of the transformer model. \cite{vaswani2017attention}
 Multi-head attention makes the model have different representations of
-learnable subspaces for keys, values and queries inputs of each layer.
+learnable subspaces for keys, values, and queries inputs of each layer.
 
 
 % Good starting points:
@@ -240,9 +240,9 @@ The input and output layers are identity transform.
 Also, the activation of the recurrent unit should be linear or ReLU in order to hold
 this property.
 
-The hidden state acts like a placeholder to store the partially sum.
+The hidden state acts as a placeholder storing the partial sum.
 
-An implementation for this question is placed in the appendix.
+The implementation of this question is placed in the appendix.
 
 \subsection{Question 4b}
 What is the minimum number of fully connected layers (separated by non-linearities)
@@ -259,14 +259,18 @@ that an ANN must have to compute the XOR function.
 The plot and the function table are shown in \cref{tbl:xor_fun} and \cref{fig:xor_fun}
 respectively.
 
-We can see that the XOR function is not linear separable. Therefore we need a non-linear
-transform to make it the input space linear separable.
+We can see that the XOR function is not linearly separable. Therefore we need a non-linear
+transform to make it the input space linearly separable.
 
-Therefore, we have two fully connected layers and one non-linear activation in between
-the two fully connected layers.
+Therefore, we need two fully connected layers and one non-linear activation in between
+the layers. The first fully connected layer and the non-linear activation layer
+are combined as a non-linear transformation and the second layer maps the learned
+hidden space to 1 or 0.
 
-An implementation for the XOR is placed in the appendix.
-The weighting comes from \cite{Goodfellow-deeplearning-book}.
+
+The implementation for the XOR neural network is placed in the appendix and
+the weightings of the network come from \cite{Goodfellow-deeplearning-book}.
+
 \begin{figure}[!ht]
     \begin{floatrow}
     % left-table
@@ -316,12 +320,12 @@ How can you tell if an ML model is underfitting and overfitting?
 % - plots
 % - Solutions
 % - Conclusion
-In supervised learning, we have to decide that how expressive our should be,
+In supervised learning, we have to decide that how expressive our model should be,
 which is either a complex and flexible model to fit a broad range of data or
-a simple and restricted model.
+a simple and restricted model for limited types of data (e.g. linear correlated data.)
 
 Before talking underfitting and overfitting, we should know that the expected prediction error
-can be decomposed into bias, variance, and the irreducible error of the data.
+can be decomposed into bias, variance, and irreducible error of the data.
 
 \begin{equation}
     \mathbb{E}_{y,S}[(y-\hat{f}(x; S))^2] =
@@ -351,22 +355,22 @@ the expected divergence of the estimated prediction function from its average va
 
 If we have a simple and inflexible learning model, we will have
 a \emph{\hl{high bias and low variance}} model and we \emph{\hl{underfit}} the data.
-A horizontal line with one tunable parameter or N-nearest neighbor
-,where N is the number of all data, are the examples of inflexible models.
-An example plot is shown in \cref{fig:underfit}.
+A horizontal line with one tunable parameter or N-nearest neighbor, where N is
+the number of all data, are the examples of inflexible models.
+The example plot is shown in \cref{fig:underfit}.
 
 On the order hand if we have a flexible learning model,
 we will have a \emph{\hl{low bias and high variance}} model and we \emph{\hl{overfit}} the data.
-It means the trained model is not generalize to the out-of-sample data. A high
-degree polynomial regression, 1--nearest neighbor and non-parametric method are the
+It means the trained model does not generalize to the out-of-sample data. A high
+degree polynomial regression, 1-nearest neighbor and non-parametric method are the
 examples of flexible learning models.
 
 In \cref{fig:bias-vars-tradeoff}, the model flexibility with the lowest out-of-sample error
 indicates the optimal point which balances the bias and the variance.
-in practice, we select a model which balances the bias and the variance through
+In practice, we select a model that balances the bias and the variance through
 tracking the error on the validation set (or it is called development set).
 
-Regularization methods helps improving the generalizability of a learned model.
+There are some regularization methods which help to improve the generalizability of a learned model.
 
 In the context of deep learning, drop-out, L2 regularization over weightings, early-stopping,
 data augmentation as well as batch-normalization
