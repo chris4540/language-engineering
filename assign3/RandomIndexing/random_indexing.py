@@ -5,7 +5,7 @@ import string
 import numpy as np
 from halo import Halo
 from sklearn.neighbors import NearestNeighbors
-
+from typing import List
 
 """
 This file is part of the computer assignments for the course DD2418 Language engineering at KTH.
@@ -73,9 +73,13 @@ class RandomIndexing(object):
     ##
     ## @return     A list of words in a cleaned line
     ##
-    def clean_line(self, line):
-        # YOUR CODE HERE
-        return []
+    def clean_line(self, line: str) -> List[str]:
+        if not hasattr(self, "_clean_line_translation_table"):
+            # make a translation table to clean punctuation and digits
+            unwanted_char = string.punctuation + string.digits
+            self._clean_line_translation_table = str.maketrans("", "", unwanted_char)
+        ret = line.translate(self._clean_line_translation_table)
+        return ret.split()
 
 
     ##
